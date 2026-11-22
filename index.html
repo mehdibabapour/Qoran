@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- index.html — VERSION ۲ (rules section right-aligned RTL; logo uses mix-blend-mode:difference for dynamic contrast) -->
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
@@ -19,9 +20,10 @@
     .content { display:flex; flex-direction:column; align-items:center; padding:clamp(22px,5vw,42px); text-align:center; }
     h1 { width:100%; margin:0; font-size:clamp(1.55rem,5vw,2.25rem); line-height:1.55; font-weight:800; letter-spacing:-.03em; text-align:center; }
     .subtitle { width:100%; margin:10px 0 0; color:var(--muted); font-size:clamp(1rem,2.8vw,1.12rem); line-height:2; white-space:pre-line; text-align:center; }
-    .rules { width:100%; margin-top:26px; padding:20px clamp(16px,4vw,24px); border:1px solid #e6eaf2; border-radius:18px; background:linear-gradient(145deg,#fbfcff,#f7f9fd); text-align:center; }
-    .rules-heading { margin:0 0 10px; color:#34415a; font-size:1rem; font-weight:700; text-align:center; }
-    .rules-content { color:#46536a; font-size:.98rem; line-height:2; white-space:pre-wrap; overflow-wrap:anywhere; text-align:center; direction:rtl; }
+    .rules { width:100%; margin-top:26px; padding:20px clamp(16px,4vw,24px); border:1px solid #e6eaf2; border-radius:18px; background:linear-gradient(145deg,#fbfcff,#f7f9fd); text-align:right; direction:rtl; }
+    .rules-heading { margin:0 0 10px; color:#34415a; font-size:1rem; font-weight:700; text-align:right; direction:rtl; }
+    .rules-content { color:#46536a; font-size:.98rem; line-height:2; white-space:pre-wrap; overflow-wrap:anywhere; text-align:right; direction:rtl; }
+    .rules :is(p,li,ul,ol,div,span,strong,b,em) { text-align:right !important; direction:rtl !important; unicode-bidi:isolate; }
     .status { width:100%; min-height:27px; margin:15px 0 0; text-align:center; color:var(--muted); font-size:.88rem; line-height:1.8; }
     .status.error { color:#b42318; }
     .status:empty { display:none; }
@@ -30,7 +32,7 @@
     .next:not(:disabled):active { transform:translateY(1px) scale(.99); }
     .next:focus-visible { outline:3px solid #93c5fd; outline-offset:3px; }
     .next:disabled { cursor:not-allowed; opacity:.48; box-shadow:none; }
-    .logo { display:block; width:min(100%,120px); max-height:100px; object-fit:contain; margin:18px auto 8px; }
+    .logo { display:block; width:min(100%,120px); max-height:100px; object-fit:contain; margin:18px auto 8px; mix-blend-mode:difference; background:transparent; }
     .version { margin:0; color:#8992a3; font-size:.8rem; line-height:1.7; text-align:center; }
     .loading-dot { display:inline-block; width:7px; height:7px; margin-inline:0 6px; border-radius:50%; background:#5b8def; animation:pulse 1s infinite alternate; vertical-align:middle; }
     @keyframes pulse { to { opacity:.25; transform:scale(.7); } }
@@ -56,7 +58,7 @@
           <button id="next-button" class="next" type="button" disabled>ادامه</button>
         </div>
         <img id="project-logo" class="logo" src="logo.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <p class="version">index.html — VERSION ۱</p>
+        <p class="version">index.html — VERSION ۲</p>
       </div>
     </article>
   </main>
