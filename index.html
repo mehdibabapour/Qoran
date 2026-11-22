@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- index.html — VERSION 7 (rules section right-aligned RTL; logo uses mix-blend-mode:difference for dynamic contrast) -->
+<!-- index.html — VERSION 8 (preserves root response; robust rules fallback) -->
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
@@ -63,7 +63,7 @@
           <button id="next-button" class="next" type="button" disabled>ادامه</button>
         </div>
         <img id="project-logo" class="logo" src="logo.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <p class="version">index.html — VERSION 7</p>
+        <p class="version">index.html — VERSION 8</p>
       </div>
     </article>
   </main>
@@ -156,7 +156,7 @@
         if (typeof obj === 'string') {
           try { obj = JSON.parse(obj); } catch (_) { return obj; }
         }
-        const wrappers = ['data','settings','result','values'];
+        const wrappers = ['data','result','values'];
         for (let i = 0; i < 10 && obj && typeof obj === 'object' && !Array.isArray(obj); i++) {
           let next;
           for (const key of wrappers) {
@@ -179,7 +179,7 @@
         const direct = field(obj, keys, row, col);
         if (direct.found && textValue(direct.value)) return direct;
         if (!Array.isArray(obj)) {
-          for (const wrapper of ['data','settings','result','values']) {
+          for (const wrapper of ['data','result','values']) {
             if (Object.prototype.hasOwnProperty.call(obj, wrapper)) {
               const nested = nestedField(obj[wrapper], keys, row, col, depth + 1);
               if (nested.found && textValue(nested.value)) return nested;
@@ -190,7 +190,15 @@
       }
       function extract(payload) {
         const obj = unwrap(payload);
-        const rules = field(obj, ['B4','rules','rule','instructions','law','laws'], 3, 1);
+        let rules = field(obj, ['B4','rules','rule','instructions','law','laws'], 3, 1);
+        // Prefer rules, but accept the Apps Script B4 cell as a string or array fallback.
+        if (!rules.found || !rulesText(rules.value).trim()) {
+          const byCell = lookupValue(obj, ['byCell']);
+          if (byCell.found) {
+            const cellRules = lookupValue(byCell.value, ['B4']);
+            if (cellRules.found && rulesText(cellRules.value).trim()) rules = cellRules;
+          }
+        }
         const title = field(obj, ['B2','title','projectTitle','name'], 1, 1);
         const subtitle = field(obj, ['B3','subtitle','description','projectSubtitle'], 2, 1);
         const deadline = nestedField(payload, ['deadline','registrationDeadline','deadlineText','registration_deadline','B5'], 4, 1, 0);
