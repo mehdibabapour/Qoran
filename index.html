@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- index.html — VERSION 12 (registration flow; dark translucent spinner overlay) -->
+<!-- index.html — VERSION 13 (registration flow; dark translucent spinner overlay) -->
 <html lang="fa" dir="rtl" class="is-loading">
 <head>
   <meta charset="utf-8">
@@ -39,7 +39,7 @@
     .logo { display:block; width:min(100%,120px); max-height:100px; object-fit:contain; margin:18px auto 8px; mix-blend-mode:difference; background:transparent; }
     .version { unicode-bidi:isolate; margin:0; color:#8992a3; font-size:.85rem; font-weight:500; line-height:1.7; text-align:center; unicode-bidi:isolate; }
     .version bdi { direction:ltr; unicode-bidi:isolate; }
-    /* ---- VERSION 11: full-page dark glass loading overlay ---- */
+    /* ---- VERSION 13: full-page dark glass loading overlay ---- */
     html.is-loading { overflow:hidden; }
     html.is-loading .version { visibility:hidden; }
     .loader-overlay { position:fixed; inset:0; z-index:2147483000; display:flex; align-items:center; justify-content:center; padding:calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom)); background:rgba(12,16,25,.46); -webkit-backdrop-filter:blur(4px) saturate(.82); backdrop-filter:blur(4px) saturate(.82); color:#fff; font-family:Calibri,sans-serif; text-align:center; direction:rtl; opacity:1; visibility:visible; transition:opacity .55s ease,visibility 0s linear 0s; overscroll-behavior:contain; touch-action:none; pointer-events:auto; }
@@ -51,7 +51,7 @@
     @media (prefers-reduced-motion:reduce) { .loader-spinner { animation-duration:2.4s; } }
 
 
-    /* VERSION 12 multi-step registration controls */
+    /* VERSION 13 multi-step registration controls */
     .flow-form { width:100%; display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:16px; }
     .flow-label { width:min(100%,420px); color:#edf0f4; font-weight:700; text-align:center; }
     .flow-input { display:block; width:min(100%,420px); min-height:52px; padding:12px 16px; border:1px solid #cbd5e1; border-radius:12px; background:#fff; color:#172033; text-align:center; direction:ltr; outline:none; }
@@ -90,7 +90,7 @@
           <button id="next-button" class="next" type="button" disabled>ادامه</button>
         </div>
         <img id="project-logo" class="logo" src="logo.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <p class="version" dir="ltr"><bdi dir="ltr">+989122166771 -  VERSION 12</bdi></p>
+        <p class="version" dir="ltr"><bdi dir="ltr">+989122166771 - VERSION 13</bdi></p>
       </div>
     </article>
   </main>
@@ -109,7 +109,7 @@
       let timeoutId;
       let countdownIntervalId;
 
-      // VERSION 11: spinner-only dark glass overlay (fades out after settings are rendered).
+      // VERSION 13: spinner-only dark glass overlay (fades out after settings are rendered).
       const loaderEl = document.getElementById('page-loader');
       let loaderHideTimerId;
       function hidePageLoader() {
@@ -540,7 +540,7 @@
     else if(state==='choices' && selectedChoice){message('انتخاب شما ثبت شد: '+(selectedChoice==='single'?'یک جزء':'کل قرآن')+'.',false);next.disabled=true;}
   });
   /* Rules stay exactly as loaded on Page 1 until Continue is pressed. */
-  window.qoranVersion12FlowReady=true;
+  window.qoranVersion13FlowReady=true;
 }());
 </script>
 </body>
