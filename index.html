@@ -6,36 +6,32 @@
   <meta name="theme-color" content="#f6f7fb">
   <meta name="description" content="صفحه معرفی پروژه و نمایش تنظیمات">
   <title>معرفی پروژه</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { color-scheme: light; --ink:#172033; --muted:#647087; --accent:#2563eb; --accent-dark:#1d4ed8; --line:#e8ebf2; }
-    * { box-sizing:border-box; }
-    html { scroll-behavior:smooth; }
-    body { margin:0; min-height:100vh; padding:clamp(16px,4vw,42px) 14px calc(22px + env(safe-area-inset-bottom)); background:radial-gradient(ellipse at 50% -10%,#e9efff 0,transparent 48%),#f6f7fb; color:var(--ink); font-family:"Vazirmatn",Tahoma,sans-serif; -webkit-font-smoothing:antialiased; }
+    :root { color-scheme: light; --ink:#172033; --muted:#647087; --line:#e8ebf2; }
+    * , *::before, *::after { box-sizing:border-box; font-family:Calibri,sans-serif; }
+    button,input,textarea,select { font:inherit; }
+    html { scroll-behavior:smooth; text-align:center; }
+    body { margin:0; min-height:100vh; padding:calc(clamp(16px,4vw,42px) + env(safe-area-inset-top)) 14px calc(22px + env(safe-area-inset-bottom)); background:radial-gradient(ellipse at 50% -10%,#e9efff 0,transparent 48%),#f6f7fb; color:var(--ink); font-family:Calibri,sans-serif; -webkit-font-smoothing:antialiased; text-align:center; }
     .page { width:min(100%,760px); margin-inline:auto; }
     .card { overflow:hidden; background:#fff; border:1px solid rgba(226,231,241,.9); border-radius:24px; box-shadow:0 16px 48px rgba(27,43,77,.08); }
     .poster-wrap { padding:clamp(12px,3vw,22px); padding-bottom:0; }
-    .poster { display:block; width:100%; max-width:100%; height:auto; max-height: min(58vh,620px); object-fit:contain; margin:auto; border-radius:16px; background:#f1f3f8; }
-    .content { padding:clamp(22px,5vw,42px); }
-    h1 { margin:0; font-size:clamp(1.55rem,5vw,2.25rem); line-height:1.55; font-weight:800; letter-spacing:-.03em; }
-    .subtitle { margin:10px 0 0; color:var(--muted); font-size:clamp(1rem,2.8vw,1.12rem); line-height:2; white-space:pre-line; }
-    .rules { margin-top:26px; padding:20px clamp(16px,4vw,24px); border:1px solid #e6eaf2; border-radius:18px; background:linear-gradient(145deg,#fbfcff,#f7f9fd); }
-    .rules-heading { margin:0 0 10px; color:#34415a; font-size:1rem; font-weight:700; }
-    .rules-content { color:#46536a; font-size:.98rem; line-height:2; white-space:pre-line; overflow-wrap:anywhere; }
-    .rules-content p { margin:0 0 8px; }
-    .rules-content p:last-child { margin-bottom:0; }
-    .action-row { display:flex; justify-content:center; margin-top:26px; }
-    .next { min-width:min(100%,220px); min-height:54px; padding:13px 28px; border:0; border-radius:15px; color:#fff; background:linear-gradient(135deg,#3b82f6,#1d4ed8); box-shadow:0 8px 18px rgba(37,99,235,.22); font:700 1.05rem "Vazirmatn",Tahoma,sans-serif; cursor:pointer; touch-action:manipulation; transition:transform .15s, box-shadow .15s, opacity .15s; }
+    .poster { display:block; width:100%; max-width:100%; height:auto; max-height:min(58vh,620px); object-fit:contain; margin:auto; border-radius:16px; background:#f1f3f8; }
+    .content { display:flex; flex-direction:column; align-items:center; padding:clamp(22px,5vw,42px); text-align:center; }
+    h1 { width:100%; margin:0; font-size:clamp(1.55rem,5vw,2.25rem); line-height:1.55; font-weight:800; letter-spacing:-.03em; text-align:center; }
+    .subtitle { width:100%; margin:10px 0 0; color:var(--muted); font-size:clamp(1rem,2.8vw,1.12rem); line-height:2; white-space:pre-line; text-align:center; }
+    .rules { width:100%; margin-top:26px; padding:20px clamp(16px,4vw,24px); border:1px solid #e6eaf2; border-radius:18px; background:linear-gradient(145deg,#fbfcff,#f7f9fd); text-align:center; }
+    .rules-heading { margin:0 0 10px; color:#34415a; font-size:1rem; font-weight:700; text-align:center; }
+    .rules-content { color:#46536a; font-size:.98rem; line-height:2; white-space:pre-wrap; overflow-wrap:anywhere; text-align:center; direction:rtl; }
+    .status { width:100%; min-height:27px; margin:15px 0 0; text-align:center; color:var(--muted); font-size:.88rem; line-height:1.8; }
+    .status.error { color:#b42318; }
+    .status:empty { display:none; }
+    .action-row { display:flex; justify-content:center; width:100%; margin-top:18px; }
+    .next { min-width:min(100%,220px); min-height:54px; padding:13px 28px; border:0; border-radius:15px; color:#fff; background:linear-gradient(135deg,#3b82f6,#1d4ed8); box-shadow:0 8px 18px rgba(37,99,235,.22); font:700 1.05rem Calibri,Tahoma,Arial,sans-serif; cursor:pointer; touch-action:manipulation; transition:transform .15s,box-shadow .15s,opacity .15s; text-align:center; }
     .next:not(:disabled):active { transform:translateY(1px) scale(.99); }
     .next:focus-visible { outline:3px solid #93c5fd; outline-offset:3px; }
     .next:disabled { cursor:not-allowed; opacity:.48; box-shadow:none; }
-    .status { min-height:27px; margin:15px 0 0; text-align:center; color:var(--muted); font-size:.88rem; line-height:1.8; }
-    .status.error { color:#b42318; }
-    .status.success { color:#16804a; }
-    footer { display:flex; align-items:center; justify-content:center; gap:10px; margin:18px 0 0; color:#8992a3; font-size:.8rem; }
-    .logo-placeholder { display:grid; place-items:center; width:25px; height:25px; border:1px dashed #c5ccda; border-radius:8px; color:#a3abba; font-size:.7rem; }
+    .logo { display:block; width:min(100%,120px); max-height:100px; object-fit:contain; margin:18px auto 8px; }
+    .version { margin:0; color:#8992a3; font-size:.8rem; line-height:1.7; text-align:center; }
     .loading-dot { display:inline-block; width:7px; height:7px; margin-inline:0 6px; border-radius:50%; background:#5b8def; animation:pulse 1s infinite alternate; vertical-align:middle; }
     @keyframes pulse { to { opacity:.25; transform:scale(.7); } }
     @media (min-width:700px) { .content { padding-top:34px; } }
@@ -55,16 +51,14 @@
           <h2 id="rules-heading" class="rules-heading">قوانین و توضیحات</h2>
           <div id="rules-content" class="rules-content">لطفاً چند لحظه صبر کنید.</div>
         </section>
+        <p id="status" class="status" role="status" aria-live="polite"><span class="loading-dot" aria-hidden="true"></span>در حال بارگذاری تنظیمات…</p>
         <div class="action-row">
           <button id="next-button" class="next" type="button" disabled>ادامه</button>
         </div>
-        <p id="status" class="status" role="status" aria-live="polite"><span class="loading-dot" aria-hidden="true"></span>در حال بارگذاری تنظیمات…</p>
+        <img id="project-logo" class="logo" src="logo.png" alt="لوگوی پروژه" onerror="this.hidden=true">
+        <p class="version">index.html — VERSION ۱</p>
       </div>
     </article>
-    <footer>
-      <span class="logo-placeholder" aria-label="جایگاه لوگو">لوگو</span>
-      <span>index.html — VERSION 1</span>
-    </footer>
   </main>
   <script>
     (function () {
@@ -76,84 +70,155 @@
       const statusEl = document.getElementById('status');
       const nextButton = document.getElementById('next-button');
       let finished = false;
+      let timeoutId;
+
+      // Convert ASCII, Arabic-Indic and Persian digits to Persian digits.
+      function persianDigits(value) {
+        return String(value).replace(/[0-9٠-٩۰-۹]/g, function (digit) {
+          const code = digit.charCodeAt(0);
+          const number = code >= 48 && code <= 57 ? code - 48 : code >= 1632 && code <= 1641 ? code - 1632 : code - 1776;
+          return '۰۱۲۳۴۵۶۷۸۹'[number];
+        });
+      }
+      function convertTextNodes(root) {
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        let node;
+        while ((node = walker.nextNode())) {
+          const converted = persianDigits(node.nodeValue);
+          if (converted !== node.nodeValue) node.nodeValue = converted;
+        }
+      }
+      convertTextNodes(document.body);
+      new MutationObserver(function (records) {
+        records.forEach(function (record) {
+          if (record.type === 'characterData') {
+            const converted = persianDigits(record.target.nodeValue);
+            if (converted !== record.target.nodeValue) record.target.nodeValue = converted;
+          }
+          record.addedNodes && record.addedNodes.forEach(function (node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+              const converted = persianDigits(node.nodeValue);
+              if (converted !== node.nodeValue) node.nodeValue = converted;
+            } else if (node.nodeType === Node.ELEMENT_NODE) convertTextNodes(node);
+          });
+        });
+      }).observe(document.body, {subtree:true, childList:true, characterData:true});
 
       function textValue(value) {
         if (value === null || value === undefined) return '';
-        if (typeof value === 'string' || typeof value === 'number') return String(value).trim();
-        return '';
-      }
-      function keyValue(obj, keys) {
-        if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return '';
-        const lookup = Object.keys(obj).reduce((map, key) => { map[key.toLowerCase().replace(/[ _-]/g, '')] = obj[key]; return map; }, {});
-        for (const key of keys) {
-          const found = textValue(lookup[key.toLowerCase().replace(/[ _-]/g, '')]);
-          if (found) return found;
+        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value).trim();
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          for (const key of ['formattedValue','displayValue','value','text','content']) {
+            if (Object.prototype.hasOwnProperty.call(value, key)) return textValue(value[key]);
+          }
         }
         return '';
+      }
+      function normalizedKey(key) { return String(key).toLowerCase().replace(/[\s_-]/g, ''); }
+      function lookupValue(obj, keys) {
+        if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return {found:false, value:undefined};
+        const lookup = Object.keys(obj).reduce(function (map, key) { map[normalizedKey(key)] = key; return map; }, {});
+        for (const key of keys) {
+          const actual = lookup[normalizedKey(key)];
+          if (actual !== undefined) return {found:true, value:obj[actual]};
+        }
+        return {found:false, value:undefined};
       }
       function fromMatrix(value, row, col) {
-        if (!Array.isArray(value)) return '';
-        const cell = Array.isArray(value[row]) ? value[row][col] : undefined;
-        return textValue(cell);
+        if (!Array.isArray(value) || value[row] === undefined) return {found:false, value:undefined};
+        const rowValue = value[row];
+        if (Array.isArray(rowValue)) {
+          if (rowValue[col] !== undefined) return {found:true, value:rowValue[col]};
+          // Also accept a single-column matrix whose first column represents B.
+          if (rowValue.length === 1 && rowValue[0] !== undefined) return {found:true, value:rowValue[0]};
+        } else if (rowValue !== null && rowValue !== undefined) {
+          return {found:true, value:rowValue};
+        }
+        return {found:false, value:undefined};
+      }
+      function unwrap(payload) {
+        let obj = payload;
+        if (typeof obj === 'string') {
+          try { obj = JSON.parse(obj); } catch (_) { return obj; }
+        }
+        const wrappers = ['data','settings','result','values'];
+        for (let i = 0; i < 10 && obj && typeof obj === 'object' && !Array.isArray(obj); i++) {
+          let next;
+          for (const key of wrappers) {
+            if (Object.prototype.hasOwnProperty.call(obj, key) && obj[key] !== null && obj[key] !== obj) { next = obj[key]; break; }
+          }
+          if (next === undefined) break;
+          obj = next;
+        }
+        return obj;
+      }
+      function field(obj, keys, row, col) {
+        const direct = lookupValue(obj, keys);
+        if (direct.found && textValue(direct.value)) return direct;
+        const matrix = fromMatrix(obj, row, col);
+        return matrix.found ? matrix : direct;
       }
       function extract(payload) {
-        let obj = payload;
-        // Accept common Apps Script response wrappers.
-        for (let i = 0; i < 3 && obj && typeof obj === 'object' && !Array.isArray(obj); i++) {
-          const nested = obj.data ?? obj.settings ?? obj.result ?? obj.values;
-          if (nested === undefined) break;
-          obj = nested;
-        }
-        const source = (keys, row, col) => keyValue(obj, keys) || fromMatrix(obj, row, col);
+        const obj = unwrap(payload);
+        const rules = field(obj, ['B4','rules','rule','instructions','law','laws'], 3, 1);
+        const title = field(obj, ['B2','title','projectTitle','name'], 1, 1);
+        const subtitle = field(obj, ['B3','subtitle','description','projectSubtitle'], 2, 1);
+        const ok = !(obj && typeof obj === 'object' && obj.ok === false);
+        const message = lookupValue(obj, ['message','error','detail']);
         return {
-          title: source(['B2','title','projectTitle','name'], 1, 1),
-          subtitle: source(['B3','subtitle','description','projectSubtitle'], 2, 1),
-          rules: source(['B4','rules','rule','instructions'], 3, 1)
+          ok: ok,
+          message: message.found ? textValue(message.value) : '',
+          title: title.found ? textValue(title.value) : '',
+          subtitle: subtitle.found ? textValue(subtitle.value) : '',
+          rules: rules.found ? rules.value : undefined
         };
+      }
+      function rulesText(value) {
+        if (typeof value === 'string' || typeof value === 'number') return String(value);
+        if (!Array.isArray(value)) return textValue(value);
+        return value.map(function (line) {
+          if (Array.isArray(line)) return line.map(textValue).filter(Boolean).join(' ');
+          return textValue(line);
+        }).filter(Boolean).join('\n');
       }
       function showError(message) {
         if (finished) return;
         finished = true;
-        titleEl.textContent = 'بارگذاری اطلاعات انجام نشد';
-        rulesEl.textContent = 'اتصال به سرویس یا دریافت اطلاعات با مشکل روبه‌رو شد. لطفاً اتصال اینترنت را بررسی کنید و صفحه را دوباره بارگذاری کنید.';
+        if (timeoutId) clearTimeout(timeoutId);
+        titleEl.textContent = persianDigits('بارگذاری اطلاعات انجام نشد');
+        rulesEl.textContent = persianDigits('اتصال به سرویس یا دریافت اطلاعات با مشکل روبه‌رو شد. لطفاً اتصال اینترنت را بررسی کنید و صفحه را دوباره بارگذاری کنید.');
         statusEl.className = 'status error';
-        statusEl.textContent = message || 'دریافت تنظیمات ناموفق بود.';
+        statusEl.textContent = persianDigits(message || 'دریافت تنظیمات ناموفق بود.');
       }
       window.qoranReceiveSettings = function (payload) {
         if (finished) return;
         const data = extract(payload);
-        if (!data.title && !data.subtitle && !data.rules) {
-          showError('پاسخ دریافت شد، اما اطلاعات قابل‌نمایش در آن پیدا نشد.');
-          return;
-        }
-        finished = true;
-        titleEl.textContent = data.title || 'عنوان پروژه';
-        if (data.subtitle) { subtitleEl.textContent = data.subtitle; subtitleEl.hidden = false; }
+        if (!data.ok) { showError(data.message || 'سرویس نتوانست تنظیمات را بخواند.'); return; }
+        titleEl.textContent = persianDigits(data.title || 'عنوان پروژه');
+        if (data.subtitle) { subtitleEl.textContent = persianDigits(data.subtitle); subtitleEl.hidden = false; }
         else subtitleEl.hidden = true;
-        if (data.rules) {
-          // Insert text only (never interpret sheet content as HTML).
-          rulesEl.replaceChildren();
-          data.rules.split(/\r?\n/).map(line => line.trim()).filter(Boolean).forEach(line => {
-            const p = document.createElement('p'); p.textContent = line; rulesEl.appendChild(p);
-          });
-        } else rulesEl.textContent = 'توضیحی برای این بخش ثبت نشده است.';
-        document.title = data.title || 'معرفی پروژه';
-        nextButton.disabled = false;
-        statusEl.className = 'status success';
-        statusEl.textContent = 'اطلاعات با موفقیت بارگذاری شد.';
+        const ruleText = rulesText(data.rules).replace(/\r\n?/g, '\n').trim();
+        finished = true;
+        if (timeoutId) clearTimeout(timeoutId);
+        if (ruleText) {
+          rulesEl.textContent = persianDigits(ruleText);
+          document.title = persianDigits(data.title || 'معرفی پروژه');
+          nextButton.disabled = false;
+          statusEl.textContent = '';
+          statusEl.className = 'status';
+        } else {
+          rulesEl.textContent = persianDigits('قوانین در سلول B4 برگه seting ثبت نشده‌اند؛ لطفاً آن را بررسی کنید.');
+          statusEl.className = 'status error';
+          statusEl.textContent = persianDigits('قوانین ثبت نشده‌اند؛ ادامه غیرفعال است.');
+          nextButton.disabled = true;
+        }
       };
       const script = document.createElement('script');
-      script.src = ENDPOINT;
+      script.src = ENDPOINT + '&_=' + Date.now();
       script.async = true;
       script.onerror = function () { showError('ارتباط با سرویس برقرار نشد. لطفاً بعداً دوباره تلاش کنید.'); };
       document.head.appendChild(script);
-      window.setTimeout(function () { showError('زمان دریافت اطلاعات به پایان رسید. لطفاً صفحه را دوباره بارگذاری کنید.'); }, 15000);
-      nextButton.addEventListener('click', function () {
-        if (!nextButton.disabled) {
-          statusEl.className = 'status success';
-          statusEl.textContent = 'آماده‌اید؛ می‌توانید ادامهٔ فرایند را انجام دهید.';
-        }
-      });
+      timeoutId = window.setTimeout(function () { showError('زمان دریافت اطلاعات به پایان رسید. لطفاً صفحه را دوباره بارگذاری کنید.'); }, 15000);
     }());
   </script>
 </body>
