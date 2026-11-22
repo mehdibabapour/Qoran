@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- index.html — VERSION 4 (rules section right-aligned RTL; logo uses mix-blend-mode:difference for dynamic contrast) -->
+<!-- index.html — VERSION 5 (rules section right-aligned RTL; logo uses mix-blend-mode:difference for dynamic contrast) -->
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
@@ -20,10 +20,12 @@
     .content { display:flex; flex-direction:column; align-items:center; padding:clamp(22px,5vw,42px); text-align:center; }
     h1 { width:100%; margin:0; font-size:clamp(1.55rem,5vw,2.25rem); line-height:1.55; font-weight:900; letter-spacing:-.03em; text-align:center; }
     .subtitle { width:100%; margin:10px 0 0; color:var(--muted); font-size:clamp(1rem,2.8vw,1.12rem); font-weight:500; line-height:2; white-space:pre-line; text-align:center; }
-    .rules { width:100%; margin-top:26px; padding:20px clamp(16px,4vw,24px); border:1px solid #e6eaf2; border-radius:18px; background:linear-gradient(145deg,#fbfcff,#f7f9fd); text-align:right; direction:rtl; }
-    .rules-heading { margin:0 0 10px; color:#34415a; font-size:1rem; font-weight:900; text-align:right; direction:rtl; }
-    .rules-content { color:#46536a; font-size:.98rem; font-weight:500; line-height:2; white-space:pre-wrap; overflow-wrap:anywhere; text-align:right; direction:rtl; }
-    .rules :is(p,li,ul,ol,div,span,strong,b,em) { text-align:right !important; direction:rtl !important; unicode-bidi:isolate; }
+    .deadline { display:block; width:min(100%,560px); margin:14px 0 0; padding:10px clamp(14px,3vw,20px); border:1px solid #414750; border-radius:12px; background:#252a31; color:#f5f6f8; font-size:clamp(.98rem,2.7vw,1.08rem); font-weight:700; line-height:1.8; text-align:center; direction:rtl; overflow-wrap:anywhere; }
+    .deadline[hidden] { display:none; }
+    .rules { width:100%; margin-top:26px; padding:20px clamp(16px,4vw,24px); border:1px solid #414750; border-radius:18px; background:#252a31; text-align:right; direction:rtl; }
+    .rules-heading { margin:0 0 10px; color:#f5f6f8; font-size:1rem; font-weight:900; text-align:right; direction:rtl; }
+    .rules-content { color:#edf0f4; font-size:.98rem; font-weight:500; line-height:2; white-space:pre-wrap; overflow-wrap:anywhere; text-align:right; direction:rtl; }
+    .rules :is(p,li,ul,ol,div,span,strong,b,em) { color:#edf0f4 !important; text-align:right !important; direction:rtl !important; unicode-bidi:isolate; }
     .status { width:100%; min-height:27px; margin:15px 0 0; text-align:center; color:var(--muted); font-size:.88rem; font-weight:500; line-height:1.8; }
     .status.error { color:#b42318; }
     .status:empty { display:none; }
@@ -49,6 +51,7 @@
       <div class="content">
         <h1 id="project-title">در حال دریافت اطلاعات…</h1>
         <p id="project-subtitle" class="subtitle" hidden></p>
+        <p id="deadline" class="deadline" hidden></p>
         <section class="rules" aria-labelledby="rules-heading">
           <h2 id="rules-heading" class="rules-heading">قوانین و توضیحات</h2>
           <div id="rules-content" class="rules-content">لطفاً چند لحظه صبر کنید.</div>
@@ -58,7 +61,7 @@
           <button id="next-button" class="next" type="button" disabled>ادامه</button>
         </div>
         <img id="project-logo" class="logo" src="logo.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <p class="version">index.html — VERSION 4</p>
+        <p class="version">index.html — VERSION 5</p>
       </div>
     </article>
   </main>
@@ -68,6 +71,7 @@
       const ENDPOINT = 'https://script.google.com/macros/s/AKfycbx3sTXgmgyITdY8wCe1hskDtc-_oMn-mjEzZGZSZq--m23Kb4ngjGsDaltpz6MN4y_kwg/exec?callback=qoranReceiveSettings';
       const titleEl = document.getElementById('project-title');
       const subtitleEl = document.getElementById('project-subtitle');
+      const deadlineEl = document.getElementById('deadline');
       const rulesEl = document.getElementById('rules-content');
       const statusEl = document.getElementById('status');
       const nextButton = document.getElementById('next-button');
@@ -164,11 +168,27 @@
         const matrix = fromMatrix(obj, row, col);
         return matrix.found ? matrix : direct;
       }
+      // Apps Script should return the B5 value as `deadline` (preferred); accept aliases and nested data/settings too.
+      function nestedField(obj, keys, row, col, depth) {
+        if (depth > 10 || !obj || typeof obj !== 'object') return {found:false, value:undefined};
+        const direct = field(obj, keys, row, col);
+        if (direct.found && textValue(direct.value)) return direct;
+        if (!Array.isArray(obj)) {
+          for (const wrapper of ['data','settings','result','values']) {
+            if (Object.prototype.hasOwnProperty.call(obj, wrapper)) {
+              const nested = nestedField(obj[wrapper], keys, row, col, depth + 1);
+              if (nested.found && textValue(nested.value)) return nested;
+            }
+          }
+        }
+        return direct;
+      }
       function extract(payload) {
         const obj = unwrap(payload);
         const rules = field(obj, ['B4','rules','rule','instructions','law','laws'], 3, 1);
         const title = field(obj, ['B2','title','projectTitle','name'], 1, 1);
         const subtitle = field(obj, ['B3','subtitle','description','projectSubtitle'], 2, 1);
+        const deadline = nestedField(payload, ['deadline','registrationDeadline','deadlineText','registration_deadline','B5'], 4, 1, 0);
         const ok = !(obj && typeof obj === 'object' && obj.ok === false);
         const message = lookupValue(obj, ['message','error','detail']);
         return {
@@ -176,6 +196,7 @@
           message: message.found ? textValue(message.value) : '',
           title: title.found ? textValue(title.value) : '',
           subtitle: subtitle.found ? textValue(subtitle.value) : '',
+          deadline: deadline.found ? textValue(deadline.value) : '',
           rules: rules.found ? rules.value : undefined
         };
       }
@@ -203,6 +224,8 @@
         titleEl.textContent = persianDigits(data.title || 'عنوان پروژه');
         if (data.subtitle) { subtitleEl.textContent = persianDigits(data.subtitle); subtitleEl.hidden = false; }
         else subtitleEl.hidden = true;
+        if (data.deadline) { deadlineEl.textContent = persianDigits('مهلت ثبت‌نام: ' + data.deadline); deadlineEl.hidden = false; }
+        else { deadlineEl.textContent = ''; deadlineEl.hidden = true; }
         const ruleText = rulesText(data.rules).replace(/\r\n?/g, '\n').trim();
         finished = true;
         if (timeoutId) clearTimeout(timeoutId);
