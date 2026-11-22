@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- index.html — VERSION 11 (dark translucent loading overlay; spinner only) -->
+<!-- index.html — VERSION 12 (registration flow; dark translucent spinner overlay) -->
 <html lang="fa" dir="rtl" class="is-loading">
 <head>
   <meta charset="utf-8">
@@ -50,6 +50,20 @@
     @keyframes loader-spin { to { transform:rotate(360deg); } }
     @media (prefers-reduced-motion:reduce) { .loader-spinner { animation-duration:2.4s; } }
 
+
+    /* VERSION 12 multi-step registration controls */
+    .flow-form { width:100%; display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:16px; }
+    .flow-label { width:min(100%,420px); color:#edf0f4; font-weight:700; text-align:center; }
+    .flow-input { display:block; width:min(100%,420px); min-height:52px; padding:12px 16px; border:1px solid #cbd5e1; border-radius:12px; background:#fff; color:#172033; text-align:center; direction:ltr; outline:none; }
+    .flow-input:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.18); }
+    .flow-note { margin:0; color:#edf0f4; line-height:1.8; text-align:center; }
+    .flow-actions { display:flex; width:100%; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:16px; }
+    .flow-button { min-height:48px; padding:10px 18px; border:1px solid #cbd5e1; border-radius:12px; background:#fff; color:#172033; font-weight:800; cursor:pointer; text-align:center; }
+    .flow-button.primary { border-color:#1d4ed8; background:#1d4ed8; color:#fff; }
+    .flow-button.selected { outline:3px solid #93c5fd; border-color:#1d4ed8; background:#eff6ff; color:#1d4ed8; }
+    .flow-button:focus-visible { outline:3px solid #93c5fd; outline-offset:2px; }
+    .flow-help { width:100%; color:#edf0f4; font-size:.9rem; text-align:center; }
+
     @media (min-width:700px) { .content { padding-top:34px; } }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; } }
   </style>
@@ -76,7 +90,7 @@
           <button id="next-button" class="next" type="button" disabled>ادامه</button>
         </div>
         <img id="project-logo" class="logo" src="logo.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <p class="version" dir="ltr"><bdi dir="ltr">+989122166771 -  VERSION 11</bdi></p>
+        <p class="version" dir="ltr"><bdi dir="ltr">+989122166771 -  VERSION 12</bdi></p>
       </div>
     </article>
   </main>
@@ -399,5 +413,135 @@
         });
     }());
   </script>
+<script>
+(function () {
+  'use strict';
+  var rules = document.querySelector('.rules');
+  var heading = document.getElementById('rules-heading');
+  var rulesContent = document.getElementById('rules-content');
+  var next = document.getElementById('next-button');
+  var status = document.getElementById('status');
+  var overlay = document.getElementById('page-loader');
+  var state = 'intro', selectedChoice = '', nationalId = '', busy = false, hideTimer;
+
+  function digitsAscii(value) {
+    return String(value || '').replace(/[۰-۹٠-٩]/g, function (c) {
+      var n=c.charCodeAt(0); return String(n >= 1632 && n <= 1641 ? n-1632 : n-1776);
+    });
+  }
+  function message(text, error) {
+    status.textContent = text || '';
+    status.className = 'status' + (error ? ' error' : '');
+  }
+  function showLoader() {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer=null; }
+    overlay.hidden=false; overlay.classList.remove('is-hiding');
+    document.documentElement.classList.add('is-loading');
+    document.body.classList.add('is-loading');
+  }
+  function hideLoader() {
+    overlay.classList.add('is-hiding');
+    hideTimer=setTimeout(function(){ overlay.hidden=true; document.documentElement.classList.remove('is-loading'); document.body.classList.remove('is-loading'); },600);
+  }
+  function delay(ms) { return new Promise(function(resolve){setTimeout(resolve,ms);}); }
+  function setPanel(title, markup, newState) {
+    heading.textContent=title; rulesContent.innerHTML=markup; state=newState; message('',false);
+  }
+  function setMainButton(label, visible) {
+    next.textContent=label || 'ادامه'; next.hidden=!visible; next.disabled=false;
+  }
+  function showNationalId() {
+    setPanel('ورود کد ملی', '<p class="flow-note">لطفاً کد ملی ۱۰ رقمی خود را وارد کنید.</p><label class="flow-label" for="national-id">کد ملی</label><input class="flow-input" id="national-id" name="nationalId" type="text" inputmode="numeric" autocomplete="off" maxlength="10" dir="ltr" aria-describedby="nid-help"><p id="nid-help" class="flow-help">اعداد فارسی و انگلیسی پذیرفته می‌شوند.</p>', 'nid');
+    setMainButton('بررسی کد ملی',true);
+    document.getElementById('national-id').focus();
+  }
+  function showPrompt() {
+    setPanel('ثبت‌نام جدید', '<p class="flow-note">این کد ملی تاکنون در سامانه ثبت‌نام نشده است. آیا مایل به ثبت‌نام جدید هستید؟</p><div class="flow-actions"><button type="button" class="flow-button primary" id="register-yes">بله، ثبت‌نام می‌کنم</button><button type="button" class="flow-button" id="register-no">خیر (انصراف)</button></div>', 'prompt');
+    setMainButton('',false);
+    document.getElementById('register-yes').addEventListener('click', async function(){
+      if(busy)return; busy=true; showLoader(); await delay(300); showRegistration(); hideLoader(); busy=false;
+    });
+    document.getElementById('register-no').addEventListener('click',function(){ nationalId=''; showNationalId(); message('کد ملی پاک شد. می‌توانید دوباره تلاش کنید.',false); });
+  }
+  function showRegistration() {
+    setPanel('اطلاعات ثبت‌نام', '<p class="flow-note">برای تکمیل ثبت‌نام، نام و شمارهٔ همراه خود را وارد کنید.</p><label class="flow-label" for="full-name">نام و نام خانوادگی</label><input class="flow-input" id="full-name" name="fullName" type="text" autocomplete="name" maxlength="120"><label class="flow-label" for="mobile">شمارهٔ همراه</label><input class="flow-input" id="mobile" name="mobile" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" dir="ltr">', 'registration');
+    setMainButton('ثبت‌نام و ادامه',true); document.getElementById('full-name').focus();
+  }
+  function showChoices() {
+    selectedChoice='';
+    setPanel('انتخاب نوع مشارکت', '<p class="flow-note">یکی از گزینه‌های زیر را انتخاب کنید:</p><div class="flow-actions" role="group" aria-label="نوع مشارکت"><button type="button" class="flow-button" data-choice="single">یک جزء (Single Juz)</button><button type="button" class="flow-button" data-choice="full">کل قرآن (Full Qoran)</button></div>', 'choices');
+    setMainButton('ادامه',true); next.disabled=true;
+    rulesContent.querySelectorAll('[data-choice]').forEach(function(button){button.addEventListener('click',function(){
+      selectedChoice=button.dataset.choice;
+      rulesContent.querySelectorAll('[data-choice]').forEach(function(b){b.classList.toggle('selected',b===button); b.setAttribute('aria-pressed',b===button?'true':'false');});
+      next.disabled=false; message('',false);
+    });});
+  }
+  function endpointUrl() {
+    return fetch('config.txt?_='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('config');return r.text();}).then(function(text){
+      var url; try {url=new URL(String(text||'').trim());} catch(e){throw new Error('آدرس سرویس معتبر نیست.');}
+      if(url.protocol!=='https:' || !url.hostname || !url.pathname.endsWith('/exec')) throw new Error('آدرس سرویس معتبر نیست.');
+      url.searchParams.delete('callback'); return url;
+    });
+  }
+  function jsonp(action, params) {
+    return endpointUrl().then(function(url){return new Promise(function(resolve,reject){
+      var callback='qoranFlow_'+Date.now()+'_'+Math.floor(Math.random()*1000000);
+      var script=document.createElement('script'), settled=false;
+      function finish(err,data){if(settled)return;settled=true;clearTimeout(timer);script.onerror=null;if(script.parentNode)script.parentNode.removeChild(script);try{delete window[callback];}catch(_){window[callback]=undefined;}err?reject(err):resolve(data);}
+      window[callback]=function(data){finish(null,data);};
+      url.searchParams.set('action',action); url.searchParams.set('callback',callback);
+      Object.keys(params||{}).forEach(function(key){url.searchParams.set(key,params[key]);});
+      var timer=setTimeout(function(){finish(new Error('پاسخی از سرویس دریافت نشد. لطفاً دوباره تلاش کنید.'));},15000);
+      script.async=true; script.src=url.toString(); script.onerror=function(){finish(new Error('ارتباط با سرویس برقرار نشد.'));};
+      document.head.appendChild(script);
+    });});
+  }
+  function responseError(data) {
+    if(!data || typeof data!=='object') return 'پاسخ سرویس معتبر نیست.';
+    if(data.ok===false || data.success===false || data.error) return String(data.message||data.error||'درخواست ناموفق بود.');
+    return '';
+  }
+  function registeredValue(data) {
+    var keys=['registered','isRegistered','exists','found','alreadyRegistered'];
+    for(var i=0;i<keys.length;i++) if(typeof data[keys[i]]==='boolean') return data[keys[i]];
+    var statusText=String(data.status||data.result||'').toLowerCase();
+    if(['registered','exists','found','already_registered'].indexOf(statusText)>=0)return true;
+    if(['not_registered','not-found','not_found','new'].indexOf(statusText)>=0)return false;
+    throw new Error('وضعیت ثبت‌نام در پاسخ سرویس مشخص نیست.');
+  }
+  async function verify() {
+    var input=document.getElementById('national-id');
+    var id=digitsAscii(input.value).replace(/\s/g,'');
+    if(!/^\d{10}$/.test(id)){message('کد ملی باید دقیقاً ۱۰ رقم باشد.',true);input.focus();return;}
+    nationalId=id; busy=true; next.disabled=true; showLoader(); message('',false);
+    try {var data=await jsonp('verify',{nationalId:id});var problem=responseError(data);if(problem)throw new Error(problem);
+      if(registeredValue(data)) showChoices(); else showPrompt();
+    } catch(e){message(e.message||'بررسی کد ملی انجام نشد. لطفاً دوباره تلاش کنید.',true);}
+    finally {hideLoader();busy=false;if(state==='nid')next.disabled=false;}
+  }
+  async function register() {
+    var name=document.getElementById('full-name'), phone=document.getElementById('mobile');
+    var fullName=String(name.value||'').trim(), mobile=digitsAscii(phone.value).replace(/[\s()-]/g,'');
+    if(!fullName){message('نام و نام خانوادگی را وارد کنید.',true);name.focus();return;}
+    if(!/^\+?\d{10,15}$/.test(mobile)){message('شمارهٔ همراه را به‌صورت معتبر (۱۰ تا ۱۵ رقم) وارد کنید.',true);phone.focus();return;}
+    busy=true; next.disabled=true; showLoader();
+    try {var data=await jsonp('register',{nationalId:nationalId,fullName:fullName,mobile:mobile});var problem=responseError(data);if(problem)throw new Error(problem);
+      if(data.ok!==true && data.success!==true && data.registered!==true && data.status!=='registered') throw new Error('تأیید ثبت‌نام از سرویس دریافت نشد.');
+      showChoices();
+    } catch(e){message(e.message||'ثبت‌نام انجام نشد. لطفاً دوباره تلاش کنید.',true);}
+    finally {hideLoader();busy=false;if(state==='registration')next.disabled=false;}
+  }
+  next.addEventListener('click',function(){
+    if(busy)return;
+    if(state==='intro') {busy=true;next.disabled=true;showLoader();delay(300).then(function(){showNationalId();hideLoader();busy=false;});}
+    else if(state==='nid') verify();
+    else if(state==='registration') register();
+    else if(state==='choices' && selectedChoice){message('انتخاب شما ثبت شد: '+(selectedChoice==='single'?'یک جزء':'کل قرآن')+'.',false);next.disabled=true;}
+  });
+  /* Rules stay exactly as loaded on Page 1 until Continue is pressed. */
+  window.qoranVersion12FlowReady=true;
+}());
+</script>
 </body>
 </html>
