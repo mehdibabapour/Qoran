@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- index.html — VERSION 3 (rules section right-aligned RTL; logo uses mix-blend-mode:difference for dynamic contrast) -->
+<!-- index.html — VERSION 4 (rules section right-aligned RTL; logo uses mix-blend-mode:difference for dynamic contrast) -->
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
@@ -11,29 +11,29 @@
     :root { color-scheme: light; --ink:#172033; --muted:#647087; --line:#e8ebf2; }
     * , *::before, *::after { box-sizing:border-box; font-family:Calibri,sans-serif; }
     button,input,textarea,select { font:inherit; }
-    html { scroll-behavior:smooth; text-align:center; }
-    body { margin:0; min-height:100vh; padding:calc(clamp(16px,4vw,42px) + env(safe-area-inset-top)) 14px calc(22px + env(safe-area-inset-bottom)); background:radial-gradient(ellipse at 50% -10%,#e9efff 0,transparent 48%),#f6f7fb; color:var(--ink); font-family:Calibri,sans-serif; -webkit-font-smoothing:antialiased; text-align:center; }
+    html { font-size:17px; scroll-behavior:smooth; text-align:center; }
+    body { margin:0; min-height:100vh; padding:calc(clamp(16px,4vw,42px) + env(safe-area-inset-top)) 14px calc(22px + env(safe-area-inset-bottom)); background:radial-gradient(ellipse at 50% -10%,#e9efff 0,transparent 48%),#f6f7fb; color:var(--ink); font-family:Calibri,sans-serif; font-weight:500; -webkit-font-smoothing:antialiased; text-align:center; }
     .page { width:min(100%,760px); margin-inline:auto; }
     .card { overflow:hidden; background:#fff; border:1px solid rgba(226,231,241,.9); border-radius:24px; box-shadow:0 16px 48px rgba(27,43,77,.08); }
     .poster-wrap { padding:clamp(12px,3vw,22px); padding-bottom:0; }
     .poster { display:block; width:100%; max-width:100%; height:auto; max-height:min(58vh,620px); object-fit:contain; margin:auto; border-radius:16px; background:#f1f3f8; }
     .content { display:flex; flex-direction:column; align-items:center; padding:clamp(22px,5vw,42px); text-align:center; }
     h1 { width:100%; margin:0; font-size:clamp(1.55rem,5vw,2.25rem); line-height:1.55; font-weight:900; letter-spacing:-.03em; text-align:center; }
-    .subtitle { width:100%; margin:10px 0 0; color:var(--muted); font-size:clamp(1rem,2.8vw,1.12rem); line-height:2; white-space:pre-line; text-align:center; }
+    .subtitle { width:100%; margin:10px 0 0; color:var(--muted); font-size:clamp(1rem,2.8vw,1.12rem); font-weight:500; line-height:2; white-space:pre-line; text-align:center; }
     .rules { width:100%; margin-top:26px; padding:20px clamp(16px,4vw,24px); border:1px solid #e6eaf2; border-radius:18px; background:linear-gradient(145deg,#fbfcff,#f7f9fd); text-align:right; direction:rtl; }
-    .rules-heading { margin:0 0 10px; color:#34415a; font-size:1rem; font-weight:800; text-align:right; direction:rtl; }
-    .rules-content { color:#46536a; font-size:.98rem; line-height:2; white-space:pre-wrap; overflow-wrap:anywhere; text-align:right; direction:rtl; }
+    .rules-heading { margin:0 0 10px; color:#34415a; font-size:1rem; font-weight:900; text-align:right; direction:rtl; }
+    .rules-content { color:#46536a; font-size:.98rem; font-weight:500; line-height:2; white-space:pre-wrap; overflow-wrap:anywhere; text-align:right; direction:rtl; }
     .rules :is(p,li,ul,ol,div,span,strong,b,em) { text-align:right !important; direction:rtl !important; unicode-bidi:isolate; }
-    .status { width:100%; min-height:27px; margin:15px 0 0; text-align:center; color:var(--muted); font-size:.88rem; line-height:1.8; }
+    .status { width:100%; min-height:27px; margin:15px 0 0; text-align:center; color:var(--muted); font-size:.88rem; font-weight:500; line-height:1.8; }
     .status.error { color:#b42318; }
     .status:empty { display:none; }
     .action-row { display:flex; justify-content:center; width:100%; margin-top:18px; }
-    .next { min-width:min(100%,220px); min-height:54px; padding:13px 28px; border:0; border-radius:15px; color:#fff; background:linear-gradient(135deg,#3b82f6,#1d4ed8); box-shadow:0 8px 18px rgba(37,99,235,.22); font:800 1.05rem Calibri,Tahoma,Arial,sans-serif; cursor:pointer; touch-action:manipulation; transition:transform .15s,box-shadow .15s,opacity .15s; text-align:center; }
+    .next { min-width:min(100%,220px); min-height:54px; padding:13px 28px; border:0; border-radius:15px; color:#fff; background:linear-gradient(135deg,#3b82f6,#1d4ed8); box-shadow:0 8px 18px rgba(37,99,235,.22); font:900 1.05rem Calibri,Tahoma,Arial,sans-serif; cursor:pointer; touch-action:manipulation; transition:transform .15s,box-shadow .15s,opacity .15s; text-align:center; }
     .next:not(:disabled):active { transform:translateY(1px) scale(.99); }
     .next:focus-visible { outline:3px solid #93c5fd; outline-offset:3px; }
     .next:disabled { cursor:not-allowed; opacity:.48; box-shadow:none; }
     .logo { display:block; width:min(100%,120px); max-height:100px; object-fit:contain; margin:18px auto 8px; mix-blend-mode:difference; background:transparent; }
-    .version { margin:0; color:#8992a3; font-size:.8rem; line-height:1.7; text-align:center; }
+    .version { margin:0; color:#8992a3; font-size:.85rem; font-weight:500; line-height:1.7; text-align:center; }
     .loading-dot { display:inline-block; width:7px; height:7px; margin-inline:0 6px; border-radius:50%; background:#5b8def; animation:pulse 1s infinite alternate; vertical-align:middle; }
     @keyframes pulse { to { opacity:.25; transform:scale(.7); } }
     @media (min-width:700px) { .content { padding-top:34px; } }
@@ -58,7 +58,7 @@
           <button id="next-button" class="next" type="button" disabled>ادامه</button>
         </div>
         <img id="project-logo" class="logo" src="logo.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <p class="version">index.html — VERSION 3</p>
+        <p class="version">index.html — VERSION 4</p>
       </div>
     </article>
   </main>
