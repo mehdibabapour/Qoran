@@ -22,6 +22,8 @@
     .subtitle { width:100%; margin:10px 0 0; color:var(--muted); font-size:clamp(1rem,2.8vw,1.12rem); font-weight:500; line-height:2; white-space:pre-line; text-align:center; }
     .deadline { display:block; width:min(100%,560px); margin:14px 0 0; padding:10px clamp(14px,3vw,20px); border:1px solid #414750; border-radius:12px; background:#252a31; color:#f5f6f8; font-size:clamp(.98rem,2.7vw,1.08rem); font-weight:700; line-height:1.8; text-align:center; direction:rtl; overflow-wrap:anywhere; }
     .deadline[hidden] { display:none; }
+    .countdown { margin-top:5px; color:#fff; font-size:.96em; font-weight:700; }
+    .countdown[hidden] { display:none; }
     .rules { width:100%; margin-top:26px; padding:20px clamp(16px,4vw,24px); border:1px solid #414750; border-radius:18px; background:#252a31; text-align:right; direction:rtl; }
     .rules-heading { margin:0 0 10px; color:#f5f6f8; font-size:1rem; font-weight:900; text-align:right; direction:rtl; }
     .rules-content { color:#edf0f4; font-size:.98rem; font-weight:500; line-height:2; white-space:pre-wrap; overflow-wrap:anywhere; text-align:right; direction:rtl; }
@@ -51,7 +53,7 @@
       <div class="content">
         <h1 id="project-title">در حال دریافت اطلاعات…</h1>
         <p id="project-subtitle" class="subtitle" hidden></p>
-        <p id="deadline" class="deadline" hidden></p>
+        <div id="deadline" class="deadline" hidden><span id="deadline-text"></span><div id="countdown" class="countdown" role="timer" aria-live="off" hidden></div></div>
         <section class="rules" aria-labelledby="rules-heading">
           <h2 id="rules-heading" class="rules-heading">قوانین و توضیحات</h2>
           <div id="rules-content" class="rules-content">لطفاً چند لحظه صبر کنید.</div>
@@ -61,7 +63,7 @@
           <button id="next-button" class="next" type="button" disabled>ادامه</button>
         </div>
         <img id="project-logo" class="logo" src="logo.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <p class="version">index.html — VERSION 5</p>
+        <p class="version">index.html — VERSION 6</p>
       </div>
     </article>
   </main>
@@ -72,11 +74,14 @@
       const titleEl = document.getElementById('project-title');
       const subtitleEl = document.getElementById('project-subtitle');
       const deadlineEl = document.getElementById('deadline');
+      const deadlineTextEl = document.getElementById('deadline-text');
+      const countdownEl = document.getElementById('countdown');
       const rulesEl = document.getElementById('rules-content');
       const statusEl = document.getElementById('status');
       const nextButton = document.getElementById('next-button');
       let finished = false;
       let timeoutId;
+      let countdownIntervalId;
 
       // Convert ASCII, Arabic-Indic and Persian digits to Persian digits.
       function persianDigits(value) {
@@ -200,6 +205,91 @@
           rules: rules.found ? rules.value : undefined
         };
       }
+      // Convert Persian Solar Hijri dates to UTC using Intl's Persian calendar,
+      // then apply the explicitly specified Iran UTC+03:30 offset.
+      const persianCalendar = new Intl.DateTimeFormat('en-US-u-ca-persian-nu-latn', {
+        timeZone:'UTC', year:'numeric', month:'numeric', day:'numeric'
+      });
+      function calendarParts(date) {
+        const parts = persianCalendar.formatToParts(date);
+        return {year:+parts.find(p => p.type === 'year').value,
+          month:+parts.find(p => p.type === 'month').value,
+          day:+parts.find(p => p.type === 'day').value};
+      }
+      function jalaliToGregorianDay(year, month, day) {
+        if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day) || month < 1 || month > 12 || day < 1 || day > 31) return null;
+        let newYear = null;
+        for (let d = 19; d <= 23; d++) {
+          const candidate = new Date(Date.UTC(year + 621, 2, d, 12));
+          const parts = calendarParts(candidate);
+          if (parts.year === year && parts.month === 1 && parts.day === 1) { newYear = Date.UTC(year + 621, 2, d) / 86400000; break; }
+        }
+        if (newYear === null) return null;
+        const offset = month <= 6 ? (month - 1) * 31 : 186 + (month - 7) * 30;
+        const dayNumber = newYear + offset + day - 1;
+        const verify = calendarParts(new Date(dayNumber * 86400000 + 43200000));
+        if (verify.year !== year || verify.month !== month || verify.day !== day) return null;
+        return dayNumber;
+      }
+      function normalizeDeadlineText(value) {
+        return String(value).replace(/[۰-۹٠-٩]/g, ch => {
+          const n = ch.charCodeAt(0); return String(n >= 1632 && n <= 1641 ? n - 1632 : n - 1776);
+        }).replace(/[يى]/g, 'ی').replace(/ك/g, 'ک').replace(/[\u00a0\u200e\u200f]/g, ' ').replace(/\s+/g, ' ').trim();
+      }
+      function parseDeadline(value) {
+        if (value === null || value === undefined || !String(value).trim()) return null;
+        const raw = normalizeDeadlineText(value);
+        // Only accept Gregorian ISO timestamps that carry an explicit timezone.
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(raw)) {
+          const timestamp = Date.parse(raw); return Number.isFinite(timestamp) ? timestamp : null;
+        }
+        const monthNames = {'فروردین':1,'اردیبهشت':2,'خرداد':3,'تیر':4,'مرداد':5,'شهریور':6,'مهر':7,'آبان':8,'آذر':9,'دی':10,'بهمن':11,'اسفند':12};
+        let year, month, day, hour, minute;
+        let m = raw.match(/^(\d{4})\s*[\/-]\s*(\d{1,2})\s*[\/-]\s*(\d{1,2})\s+(\d{1,2}):(\d{2})$/);
+        if (m) { year=+m[1]; month=+m[2]; day=+m[3]; hour=+m[4]; minute=+m[5]; }
+        else {
+          m = raw.match(/^(\d{1,2})\s+([\u0600-\u06ff]+)\s+(\d{4})\s*[،,]?\s*(?:ساعت\s*)?(\d{1,2}):(\d{2})(?:\s+به\s+وقت\s+ایران)?$/);
+          if (!m) return null;
+          day=+m[1]; month=monthNames[m[2]]; year=+m[3]; hour=+m[4]; minute=+m[5];
+        }
+        if (!month || hour > 23 || minute > 59) return null;
+        const dayNumber = jalaliToGregorianDay(year, month, day);
+        if (dayNumber === null) return null;
+        return dayNumber * 86400000 + hour * 3600000 + minute * 60000 - 210 * 60000;
+      }
+      function stopCountdown() {
+        if (countdownIntervalId !== undefined) { clearInterval(countdownIntervalId); countdownIntervalId = undefined; }
+      }
+      function startCountdown(deadlineValue) {
+        stopCountdown();
+        countdownEl.hidden = true;
+        countdownEl.textContent = '';
+        const deadlineMs = parseDeadline(deadlineValue);
+        if (deadlineMs === null) return;
+        countdownEl.hidden = false;
+        function updateCountdown() {
+          const remaining = Math.ceil((deadlineMs - Date.now()) / 1000);
+          if (remaining <= 0) {
+            countdownEl.textContent = 'مهلت ثبت‌نام به پایان رسیده است';
+            stopCountdown();
+            return;
+          }
+          const days = Math.floor(remaining / 86400);
+          const hours = Math.floor((remaining % 86400) / 3600);
+          const minutes = Math.floor((remaining % 3600) / 60);
+          const seconds = remaining % 60;
+          countdownEl.textContent = 'زمان باقی‌مانده: ' + persianDigits(days) + ' روز، ' + persianDigits(hours) + ' ساعت، ' + persianDigits(minutes) + ' دقیقه، ' + persianDigits(seconds) + ' ثانیه';
+        }
+        updateCountdown();
+        countdownIntervalId = window.setInterval(updateCountdown, 1000);
+      }
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden && countdownIntervalId !== undefined) {
+          // Resample wall-clock time when returning to the page.
+          const text = deadlineTextEl.dataset.rawDeadline;
+          if (text) startCountdown(text);
+        }
+      });
       function rulesText(value) {
         if (typeof value === 'string' || typeof value === 'number') return String(value);
         if (!Array.isArray(value)) return textValue(value);
@@ -224,8 +314,8 @@
         titleEl.textContent = persianDigits(data.title || 'عنوان پروژه');
         if (data.subtitle) { subtitleEl.textContent = persianDigits(data.subtitle); subtitleEl.hidden = false; }
         else subtitleEl.hidden = true;
-        if (data.deadline) { deadlineEl.textContent = persianDigits('مهلت ثبت‌نام: ' + data.deadline); deadlineEl.hidden = false; }
-        else { deadlineEl.textContent = ''; deadlineEl.hidden = true; }
+        if (data.deadline) { deadlineTextEl.textContent = persianDigits('مهلت ثبت‌نام: ' + data.deadline); deadlineTextEl.dataset.rawDeadline = data.deadline; deadlineEl.hidden = false; startCountdown(data.deadline); }
+        else { deadlineTextEl.textContent = ''; deadlineTextEl.dataset.rawDeadline = ''; deadlineEl.hidden = true; stopCountdown(); countdownEl.hidden = true; countdownEl.textContent = ''; }
         const ruleText = rulesText(data.rules).replace(/\r\n?/g, '\n').trim();
         finished = true;
         if (timeoutId) clearTimeout(timeoutId);
