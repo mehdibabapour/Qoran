@@ -1,6 +1,6 @@
 <!doctype html>
-<!-- index.html — VERSION 8 (preserves root response; robust rules fallback) -->
-<html lang="fa" dir="rtl">
+<!-- index.html — VERSION 10 (full-page loading overlay + smooth fade; preserves root response; robust rules fallback) -->
+<html lang="fa" dir="rtl" class="is-loading">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -40,11 +40,38 @@
     .version { margin:0; color:#8992a3; font-size:.85rem; font-weight:500; line-height:1.7; text-align:center; }
     .loading-dot { display:inline-block; width:7px; height:7px; margin-inline:0 6px; border-radius:50%; background:#5b8def; animation:pulse 1s infinite alternate; vertical-align:middle; }
     @keyframes pulse { to { opacity:.25; transform:scale(.7); } }
+
+    /* ---- VERSION 10: full-page loading overlay ---- */
+    html.is-loading { overflow:hidden; }
+    .loader-overlay { position:fixed; inset:0; z-index:2147483000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom)); background:rgba(246,247,251,.96); background:rgba(246,247,251,.96); -webkit-backdrop-filter:blur(14px) saturate(1.15); backdrop-filter:blur(14px) saturate(1.15); color:#172033; font-family:Calibri,sans-serif; text-align:center; direction:rtl; opacity:1; visibility:visible; transition:opacity .55s ease,visibility 0s linear 0s; overscroll-behavior:contain; touch-action:none; }
+    .loader-overlay.is-hiding { opacity:0; visibility:hidden; transition:opacity .55s ease,visibility 0s linear .55s; pointer-events:none; }
+    .loader-overlay[hidden] { display:none !important; }
+    .loader-panel { display:flex; flex-direction:column; align-items:center; gap:16px; width:min(100%,340px); padding:clamp(24px,6vw,34px) clamp(20px,5vw,30px); border:1px solid rgba(255,255,255,.9); border-radius:24px; background:rgba(255,255,255,.94); box-shadow:0 24px 64px rgba(23,32,51,.18),0 2px 8px rgba(23,32,51,.08); }
+    .loader-spinner { position:relative; width:64px; height:64px; border-radius:50%; background:conic-gradient(from 0deg,#1d4ed8 0deg,#3b82f6 130deg,#93c5fd 240deg,rgba(147,197,253,0) 360deg); -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 7px),#000 calc(100% - 6px)); mask:radial-gradient(farthest-side,transparent calc(100% - 7px),#000 calc(100% - 6px)); animation:loader-spin .9s linear infinite; }
+    .loader-spinner::after { content:""; position:absolute; inset:0; border-radius:50%; box-shadow:0 0 0 1px rgba(29,78,216,.12); }
+    @keyframes loader-spin { to { transform:rotate(360deg); } }
+    .loader-title { margin:0; color:#172033; font-size:1.08rem; font-weight:900; line-height:1.9; }
+    .loader-text { margin:0; color:#3f4a5e; font-size:.95rem; font-weight:500; line-height:1.9; }
+    .loader-dots { display:inline-flex; gap:6px; margin-top:2px; }
+    .loader-dots span { width:8px; height:8px; border-radius:50%; background:#1d4ed8; animation:loader-bounce 1s infinite ease-in-out; }
+    .loader-dots span:nth-child(2) { animation-delay:.15s; }
+    .loader-dots span:nth-child(3) { animation-delay:.3s; }
+    @keyframes loader-bounce { 0%,80%,100% { opacity:.25; transform:translateY(0) scale(.8); } 40% { opacity:1; transform:translateY(-5px) scale(1); } }
+    @media (prefers-reduced-motion:reduce) { .loader-spinner { animation-duration:2.4s; } .loader-dots span { animation:none; opacity:.7; } }
+
     @media (min-width:700px) { .content { padding-top:34px; } }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; } }
   </style>
 </head>
-<body>
+<body class="is-loading">
+  <div id="page-loader" class="loader-overlay" role="alert" aria-live="assertive" aria-busy="true" aria-label="در حال بارگذاری صفحه">
+    <div class="loader-panel">
+      <div class="loader-spinner" aria-hidden="true"></div>
+      <p class="loader-title">در حال بارگذاری صفحه…</p>
+      <p class="loader-text">نسخهٔ ۱۰ — لطفاً چند لحظه صبر کنید؛ اطلاعات در حال دریافت و آماده‌سازی است.</p>
+      <div class="loader-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
+  </div>
   <main class="page">
     <article class="card" aria-labelledby="project-title">
       <div class="poster-wrap">
@@ -63,14 +90,13 @@
           <button id="next-button" class="next" type="button" disabled>ادامه</button>
         </div>
         <img id="project-logo" class="logo" src="logo.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <p class="version">index.html — VERSION 8</p>
+        <p class="version">+۹۸۹۱۲۲۱۶۶۷۷۱ — VERSION 10</p>
       </div>
     </article>
   </main>
   <script>
     (function () {
       'use strict';
-      const ENDPOINT = 'https://script.google.com/macros/s/AKfycbwxBI-cvDkR4GihzMtG_NB2jYS97bnctAj-hvCIvb6Dz4s6IlmWm97v6mvBkKtcPUnoKQ/exec?callback=qoranReceiveSettings';
       const titleEl = document.getElementById('project-title');
       const subtitleEl = document.getElementById('project-subtitle');
       const deadlineEl = document.getElementById('deadline');
@@ -82,6 +108,21 @@
       let finished = false;
       let timeoutId;
       let countdownIntervalId;
+
+      // VERSION 10: full-page loading overlay (fades out only after settings are rendered).
+      const loaderEl = document.getElementById('page-loader');
+      let loaderHideTimerId;
+      function hidePageLoader() {
+        if (!loaderEl || loaderEl.hidden) return;
+        loaderEl.classList.add('is-hiding');
+        document.documentElement.classList.remove('is-loading');
+        if (loaderHideTimerId) clearTimeout(loaderHideTimerId);
+        loaderHideTimerId = window.setTimeout(function () {
+          loaderEl.hidden = true;
+          loaderEl.setAttribute('aria-busy', 'false');
+        }, 600);
+      }
+      window.qoranHidePageLoader = hidePageLoader;
 
       // Convert ASCII, Arabic-Indic and Persian digits to Persian digits.
       function persianDigits(value) {
@@ -314,6 +355,7 @@
         rulesEl.textContent = persianDigits('اتصال به سرویس یا دریافت اطلاعات با مشکل روبه‌رو شد. لطفاً اتصال اینترنت را بررسی کنید و صفحه را دوباره بارگذاری کنید.');
         statusEl.className = 'status error';
         statusEl.textContent = persianDigits(message || 'دریافت تنظیمات ناموفق بود.');
+        hidePageLoader();
       }
       window.qoranReceiveSettings = function (payload) {
         if (finished) return;
@@ -333,19 +375,43 @@
           nextButton.disabled = false;
           statusEl.textContent = '';
           statusEl.className = 'status';
+          requestAnimationFrame(function () { requestAnimationFrame(hidePageLoader); });
         } else {
           rulesEl.textContent = persianDigits('قوانین در سلول B4 برگه seting ثبت نشده‌اند؛ لطفاً آن را بررسی کنید.');
           statusEl.className = 'status error';
           statusEl.textContent = persianDigits('قوانین ثبت نشده‌اند؛ ادامه غیرفعال است.');
           nextButton.disabled = true;
+          requestAnimationFrame(function () { requestAnimationFrame(hidePageLoader); });
         }
       };
-      const script = document.createElement('script');
-      script.src = ENDPOINT + '&_=' + Date.now();
-      script.async = true;
-      script.onerror = function () { showError('ارتباط با سرویس برقرار نشد. لطفاً بعداً دوباره تلاش کنید.'); };
-      document.head.appendChild(script);
+      // Keep the full-page overlay visible throughout config fetch and JSONP loading.
       timeoutId = window.setTimeout(function () { showError('زمان دریافت اطلاعات به پایان رسید. لطفاً صفحه را دوباره بارگذاری کنید.'); }, 15000);
+      fetch('config.txt?_=' + Date.now(), {cache:'no-store'})
+        .then(function (response) {
+          if (!response.ok) throw new Error('config fetch failed');
+          return response.text();
+        })
+        .then(function (configText) {
+          const configUrl = String(configText || '').trim();
+          if (!configUrl) throw new Error('empty config');
+          let endpoint;
+          try { endpoint = new URL(configUrl); } catch (_) { throw new Error('invalid config URL'); }
+          if (endpoint.protocol !== 'https:' || !endpoint.hostname || !endpoint.pathname.endsWith('/exec')) {
+            throw new Error('invalid config URL');
+          }
+          const callback = endpoint.searchParams.get('callback');
+          if (callback && callback !== 'qoranReceiveSettings') throw new Error('invalid callback');
+          if (!callback) endpoint.searchParams.append('callback', 'qoranReceiveSettings');
+          if (finished) return;
+          const script = document.createElement('script');
+          script.src = endpoint.toString() + '&_=' + Date.now();
+          script.async = true;
+          script.onerror = function () { showError('ارتباط با سرویس برقرار نشد. لطفاً بعداً دوباره تلاش کنید.'); };
+          document.head.appendChild(script);
+        })
+        .catch(function () {
+          showError('خطا در خواندن فایل تنظیمات (config.txt).');
+        });
     }());
   </script>
 </body>
