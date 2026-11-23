@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- index.html — VERSION 15 (complete multi-step registration flow) -->
+<!-- index.html — VERSION 16 (complete multi-step registration flow) -->
 <html lang="fa" dir="rtl" class="is-loading">
 <head>
   <meta charset="utf-8">
@@ -46,7 +46,7 @@
     .logo { display:block; width:min(100%,120px); max-height:100px; object-fit:contain; margin:18px auto 8px; mix-blend-mode:difference; background:transparent; }
     .version { unicode-bidi:isolate; margin:0; color:#8992a3; font-size:.85rem; font-weight:500; line-height:1.7; text-align:center; unicode-bidi:isolate; }
     .version bdi { direction:ltr; unicode-bidi:isolate; }
-    /* ---- VERSION 15: full-page dark glass loading overlay ---- */
+    /* ---- VERSION 16: full-page dark glass loading overlay ---- */
     html.is-loading { overflow:hidden; }
     html.is-loading:not(.flow-loading) .version { visibility:hidden; }
     html.flow-loading .version { visibility:visible; color:#fff; }
@@ -59,7 +59,7 @@
     @media (prefers-reduced-motion:reduce) { .loader-spinner { animation-duration:2.4s; } }
 
 
-    /* VERSION 15 multi-step registration controls */
+    /* VERSION 16 multi-step registration controls */
     .flow-form { width:100%; display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:16px; }
     .flow-label { width:min(100%,420px); color:#edf0f4; font-weight:700; text-align:center; }
     .flow-input { display:block; width:min(100%,420px); min-height:52px; padding:12px 16px; border:1px solid #cbd5e1; border-radius:12px; background:#fff; color:#172033; text-align:center; direction:ltr; outline:none; }
@@ -102,7 +102,7 @@
           <button id="next-button" class="next" type="button" disabled>ادامه</button>
         </div>
         <img id="project-logo" class="logo" src="logo.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <p class="version" dir="ltr"><bdi dir="ltr">+989122166771 -  VERSION 15</bdi></p>
+        <p class="version" dir="ltr"><bdi dir="ltr">+989122166771 -  VERSION 16</bdi></p>
       </div>
     </article>
   </main>
@@ -121,7 +121,7 @@
       let timeoutId;
       let countdownIntervalId;
 
-      // VERSION 15: spinner-only dark glass overlay (fades out after settings are rendered).
+      // VERSION 16: spinner-only dark glass overlay (fades out after settings are rendered).
       const loaderEl = document.getElementById('page-loader');
       let loaderHideTimerId;
       function hidePageLoader() {
@@ -436,7 +436,6 @@
   var status = document.getElementById('status');
   var overlay = document.getElementById('page-loader');
   var state = 'intro', selectedChoice = '', nationalId = '', busy = false, hideTimer;
-  var originalRules = document.getElementById('rules-content').textContent;
 
   function digitsAscii(value) {
     return String(value || '').replace(/[۰-۹٠-٩]/g, function (c) {
@@ -464,15 +463,15 @@
   function returnToIntro() {
     nationalId=''; selectedChoice='';
     flowPanel.hidden=true; rules.hidden=false;
-    document.getElementById('rules-content').textContent=originalRules;
     setMainButton('ادامه',true); state='intro'; message('',false);
   }
   function setMainButton(label, visible) {
     next.textContent=label || 'ادامه'; next.hidden=!visible; next.disabled=false;
   }
   function showNationalId() {
-    setPanel('ورود کد ملی', '<p class="flow-note">لطفاً کد ملی ۱۰ رقمی خود را وارد کنید.</p><label class="flow-label" for="national-id">کد ملی</label><input class="flow-input" id="national-id" name="nationalId" type="text" inputmode="numeric" autocomplete="off" maxlength="10" dir="ltr" aria-describedby="nid-help"><p id="nid-help" class="flow-help">اعداد فارسی و انگلیسی پذیرفته می‌شوند.</p>', 'nid');
+    setPanel('ورود کد ملی', '<p class="flow-note">لطفاً کد ملی ۱۰ رقمی خود را وارد کنید.</p><label class="flow-label" for="national-id">کد ملی</label><input class="flow-input" id="national-id" name="nationalId" type="text" inputmode="numeric" autocomplete="off" maxlength="10" dir="ltr" aria-describedby="nid-help"><p id="nid-help" class="flow-help">اعداد فارسی و انگلیسی پذیرفته می‌شوند.</p><div class="flow-actions"><button type="button" class="flow-button" id="back-to-intro">بازگشت</button></div>', 'nid');
     setMainButton('بررسی کد ملی',true);
+    document.getElementById('back-to-intro').addEventListener('click', returnToIntro);
     document.getElementById('national-id').focus();
   }
   function showPrompt() {
@@ -555,7 +554,7 @@
   next.addEventListener('click',function(){
     if(busy)return;
     if(state==='intro') {
-      // VERSION 15: switch screens synchronously; never put the intro transition behind a loader.
+      // VERSION 16: switch screens synchronously; never put the intro transition behind a loader.
       busy=true;
       showNationalId();
       busy=false;
@@ -570,7 +569,7 @@
     else if(state==='choices' && selectedChoice){message('انتخاب شما ثبت شد: '+(selectedChoice==='single'?'یک جزء':'کل قرآن')+'.',false);next.disabled=true;}
   });
   /* Rules stay exactly as loaded on Page 1 until Continue is pressed. */
-  window.qoranVersion15FlowReady=true;
+  window.qoranVersion16FlowReady=true;
 }());
 </script>
 </body>
