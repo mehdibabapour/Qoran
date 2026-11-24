@@ -57,11 +57,15 @@
     .logo { display:block; width:min(100%,120px); max-height:100px; object-fit:contain; margin:18px auto 8px; background:transparent; }
     .version { margin:0; color:#8992a3; font-size:.85rem; font-weight:500; line-height:1.7; text-align:center; unicode-bidi:isolate; }
     .version bdi { direction:ltr; unicode-bidi:isolate; }
-    .version-brand { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:clamp(6px,1.6vw,10px); width:100%; max-width:100%; margin:12px auto 0; padding:0 8px; font-size:clamp(.68rem,2.5vw,.85rem); line-height:1.4; }
-    .version-brand-phone, .version-brand-text { direction:ltr; unicode-bidi:isolate; white-space:nowrap; }
-    .version-brand-text { color:#8992a3; font-weight:500; }
-    .version-brand-separator { display:block; flex:0 0 1px; width:1px; height:1.15em; border-left:1px solid #d6dae3; }
-    .version-brand-logo { display:block; width:44px; height:44px; flex:0 0 44px; object-fit:contain; background:transparent; }
+    .page, .card, .content { display:flex; flex-direction:column; align-items:center; text-align:center; }
+    .page { display:flex; }
+    .card { width:100%; }
+    .content { width:100%; }
+    .version-brand { display:flex; flex-direction:row; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; width:100%; max-width:100%; margin:18px 0 8px; text-align:center; }
+    .version-brand img { display:block; width:38px; height:auto; max-height:38px; flex:0 0 38px; object-fit:contain; vertical-align:middle; margin:0; }
+    .version-brand .version { margin:0; line-height:1.4; }
+    .brand-separator { color:#d5dae3; height:18px; line-height:18px; font-size:1rem; font-weight:400; vertical-align:middle; }
+    @media (max-width:380px) { .version-brand { gap:8px; } }
     /* ---- VERSION I49: no loading overlay. The full-screen loader has been removed; nothing can block the page. ---- */
 
     /* VERSION I49 multi-step registration controls */
@@ -143,8 +147,7 @@
           <button id="next-button" class="next" type="button">ادامه</button>
         </div>
         <img id="project-logo" class="logo" src="logo-2.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <div class="version-brand"><span class="version-brand-phone" dir="ltr">+۹۸۹۱۲۲۱۶۶۷۷۱</span><span class="version-brand-separator" aria-hidden="true"></span><span class="version-brand-text" dir="ltr">Version I49S7</span><span class="version-brand-separator" aria-hidden="true"></span><img class="version-brand-logo" src="logo-1.png" width="44" height="44" alt="لوگو">
-      </div>
+        <div class="version-brand" aria-label="اطلاعات نسخه و تماس"><img src="logo-1.png" width="38" height="38" alt="لوگو"><span class="brand-separator" aria-hidden="true">|</span><p class="version" dir="ltr"><bdi dir="ltr">Version I49S7</bdi></p><span class="brand-separator" aria-hidden="true">|</span><p class="version" dir="ltr"><bdi dir="ltr">+۹۸۹۱۲۲۱۶۶۷۷۱</bdi></p></div>
     </article>
   </main>
   <noscript><p style="color:#b42318;text-align:center;">جاوااسکریپت برای ادامه لازم است.</p></noscript>
