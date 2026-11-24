@@ -1,6 +1,6 @@
 <!doctype html>
-<!-- index.html — VERSION I50S7 (complete multi-step registration flow) -->
-<!-- VERSION I50S7: loading overlay removed from DOM; Continue is always active and transitions instantly to the National ID screen. -->
+<!-- index.html — VERSION I51S7 (complete multi-step registration flow) -->
+<!-- VERSION I51S7: loading overlay removed from DOM; Continue is always active and transitions instantly to the National ID screen. -->
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
@@ -54,12 +54,13 @@
     .next:not(:disabled):active { transform:scale(.97); opacity:.88; transition:transform .1s,opacity .1s; }
     .next:focus-visible { outline:3px solid #93c5fd; outline-offset:3px; }
     .next:disabled { cursor:not-allowed; opacity:.48; box-shadow:none; }
-    .logo { display:block; width:min(100%,120px); max-height:100px; object-fit:contain; margin:18px auto 8px; background:transparent; }
-    .version { margin:0; color:#8992a3; font-size:.85rem; font-weight:500; line-height:1.7; text-align:center; unicode-bidi:isolate; }
-    .version bdi { direction:ltr; unicode-bidi:isolate; }
-    /* ---- VERSION I50S7: no loading overlay. The full-screen loader has been removed; nothing can block the page. ---- */
+    .site-footer { display:flex; direction:ltr; align-items:center; justify-content:center; text-align:center; gap:10px; width:max-content; max-width:100%; margin:18px auto 0; min-height:21px; color:#8992a3; font-size:.78rem; font-weight:500; line-height:1; white-space:nowrap; }
+    .footer-mobile, .footer-version { display:inline-flex; align-items:center; height:20px; line-height:20px; }
+    .footer-separator { display:block; width:1px; height:14px; flex:0 0 1px; background:#cbd1dc; }
+    .footer-logo { display:block; width:22px; height:21px; flex:0 0 22px; object-fit:contain; margin:0; background:transparent; vertical-align:middle; align-self:center; }
+    /* ---- VERSION I51S7: no loading overlay. The full-screen loader has been removed; nothing can block the page. ---- */
 
-    /* VERSION I50S7 multi-step registration controls */
+    /* VERSION I51S7 multi-step registration controls */
     .flow-form { width:100%; display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:16px; }
     .flow-label { width:min(100%,420px); color:#edf0f4; font-weight:700; text-align:center; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
     .flow-input { display:block; width:min(100%,420px); min-height:52px; padding:12px 16px; border:1px solid #cbd5e1; border-radius:12px; background:#fff; color:#172033; text-align:center; direction:ltr; outline:none; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
@@ -92,7 +93,7 @@
   
     .flow-actions .flow-button.primary{background:#1d4ed8;color:#fff}.registration-actions .flow-button.primary{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff}.flow-actions.editing{opacity:.4;pointer-events:none}.edit-name{border:0;border-radius:8px;padding:9px 16px;cursor:pointer;color:#000!important;font-weight:900}.edit-name[aria-pressed="true"]{background:#20c997!important;color:#000!important}.name-editor{margin:12px auto}.name-editor small{display:block;margin-top:6px;color:#52616b}.name-edit-input:focus{caret-color:#111;outline:2px solid #20c997}.selection-actions{margin-top:18px}.participant-name{margin:10px 0}.outside-flow-actions{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;margin-top:14px}.outside-flow-actions[hidden]{display:none}.outside-flow-actions .flow-button{display:block;width:min(100%,420px);min-height:54px}.cancel-choice{background:#fff7ed;border-color:#fdba74;color:#9a3412}.flow-input#part-count[type="text"],select.flow-input#part-count{appearance:none;-webkit-appearance:none;background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='m7 11 9 10 9-10' fill='none' stroke='%231d4ed8' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center;background-size:30px 30px;padding-left:58px;cursor:pointer}.single-warning{display:block;width:min(100%,420px);margin:12px auto 0;padding:10px 14px;border:1px solid #f59e0b;border-radius:10px;background:#fffbeb;color:#92400e;font-weight:800;line-height:1.8} .participant-name{margin:10px 0}
 
-    /* VERSION I50S7 visual fixes */
+    /* VERSION I51S7 visual fixes */
     .participant-name { display:inline-flex; align-items:center; justify-content:center; gap:12px; flex-wrap:nowrap; white-space:nowrap; max-width:100%; }
     .participant-name strong { display:inline-block; }
     .quran-stepper { display:flex; flex-direction:row; direction:ltr; align-items:center; justify-content:center; gap:10px; width:min(100%,420px); margin:8px auto; }
@@ -103,7 +104,7 @@
   </style>
 </head>
 <body>
-  <!-- VERSION I50S7: NO #page-loader element is rendered, so it can never trap the user or block clicks. -->
+  <!-- VERSION I51S7: NO #page-loader element is rendered, so it can never trap the user or block clicks. -->
   <main class="page">
     <article class="card" aria-labelledby="project-title">
       <div class="poster-wrap">
@@ -137,16 +138,20 @@
           <button id="back" class="next nid-back" type="button" hidden>بازگشت به قوانین</button>
           <button id="next-button" class="next" type="button">ادامه</button>
         </div>
-        <img id="project-logo" class="logo" src="logo-2.png" alt="لوگوی پروژه" onerror="this.hidden=true">
-        <div class="version-brand" style="display:flex;align-items:center;justify-content:center;gap:8px"><img src="logo-1.png" width="64" height="64" alt="لوگو" style="display:block;width:64px;height:64px;flex:0 0 64px;object-fit:contain;background:transparent"><p class="version" dir="ltr"><bdi dir="ltr">+۹۸۹۱۲۲۱۶۶۷۷۱</bdi> <span dir="ltr" style="unicode-bidi:isolate">I50S7</span></p>
-      </div>
+        <footer class="site-footer" aria-label="اطلاعات نسخه و تماس">
+          <span class="footer-mobile" dir="ltr"><bdi>+989122166771</bdi></span>
+          <span class="footer-separator" aria-hidden="true"></span>
+          <span class="footer-version" dir="ltr">Version I51S7</span>
+          <span class="footer-separator" aria-hidden="true"></span>
+          <img class="footer-logo" src="logo-1.png" alt="لوگو" onerror="this.hidden=true">
+        </footer>
     </article>
   </main>
   <noscript><p style="color:#b42318;text-align:center;">جاوااسکریپت برای ادامه لازم است.</p></noscript>
   <script>
 (function(){
 'use strict';
-// VERSION I50S7: explicitly remove any stray full-page loader that could ever exist.
+// VERSION I51S7: explicitly remove any stray full-page loader that could ever exist.
 var overlay=document.getElementById('page-loader');if(overlay){overlay.remove();}
 var htmlEl=document.documentElement;htmlEl.classList.remove('is-loading','flow-loading');
 
@@ -212,7 +217,7 @@ function back(){
   nationalId='';
   choice='';
 }
-// VERSION I50S7: Page 2 real <form>, submit handler sends JSONP action=verify (and registration branch sends action=register).
+// VERSION I51S7: Page 2 real <form>, submit handler sends JSONP action=verify (and registration branch sends action=register).
 function validateField(input,feedback,kind){
  var value=input.value.trim(),valid=false,message='';
  if(kind==='nid'){value=ascii(value).replace(/\s/g,'');valid=/^\d{10}$/.test(value);message=valid?'آفرین، کد ملی را طبق نمونه وارد کردی.':'کد ملی را طبق نمونه وارد نکردی.';}
@@ -310,13 +315,13 @@ function jalCal(jy){var breaks=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635
 function jalaliTimestamp(y,mo,day,hh,mm,ss){if(!Number.isInteger(y)||!Number.isInteger(mo)||!Number.isInteger(day)||y<1||mo<1||mo>12||day<1)return NaN;var cal=jalCal(y);if(!cal)return NaN;var max=mo<=6?31:(mo<=11?30:(cal.leap===0?30:29));if(day>max)return NaN;var elapsed=(mo<=7?(mo-1)*31:186+(mo-7)*30)+(day-1),d=new Date(0);d.setUTCFullYear(cal.gy,2,cal.march+elapsed);return gregorianTimestamp(d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate(),hh,mm,ss);}
 function updateCountdown(value){if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}var end=parseDeadline(value);deadline.hidden=false;countdown.hidden=false;if(!Number.isFinite(end)){countdown.textContent='تاریخ مهلت ثبت‌نام قابل تشخیص نیست.';return;}function tick(){var left=end-Date.now();if(left<=0){countdown.textContent='مهلت ثبت‌نام به پایان رسیده است.';if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}return;}var sec=Math.floor(left/1000),days=Math.floor(sec/86400);sec%=86400;var h=Math.floor(sec/3600);sec%=3600;var min=Math.floor(sec/60);sec%=60;countdown.textContent='زمان باقی‌مانده: '+days+' روز و '+h+' ساعت و '+min+' دقیقه و '+sec+' ثانیه';}tick();if(end>Date.now())countdownTimer=setInterval(tick,1000);}
 window.qoranReceiveSettings=function(d){if(!d||d.ok===false)return;var by=d.byCell||{},t=d.title||by.B2,sub=d.subtitle||by.B3,r=d.rules||by.B4;if(t){title.textContent=fa(t);document.title=fa(t);}if(sub){subtitle.textContent=fa(sub);subtitle.hidden=false;}if(r){rules.textContent=fa(Array.isArray(r)?r.join('\n'):String(r));}var dl=d.deadline||by.B5;if(dl){deadlineText.textContent='مهلت ثبت‌نام: '+fa(dl);deadline.hidden=false;updateCountdown(dl);}var versionNumber=by.B6;var sv=versionNumber!==undefined&&versionNumber!==null&&String(versionNumber).trim()!==''?'S'+String(versionNumber).trim():'S7';document.getElementById('script-version').textContent=sv;};
-// VERSION I50S7: settings load is fully asynchronous and never shows any overlay, never disables Continue.
+// VERSION I51S7: settings load is fully asynchronous and never shows any overlay, never disables Continue.
 fetch('config.txt?_='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw Error();return r.text();}).then(function(raw){var u=new URL(raw.trim());if(u.protocol!=='https:'||!u.pathname.endsWith('/exec'))throw Error();u.searchParams.set('callback','qoranReceiveSettings');var x=document.createElement('script');x.src=u.href;x.onerror=function(){msg('تنظیمات آنلاین بارگذاری نشد؛ امکان ادامه همچنان فعال است.',true);};document.head.appendChild(x);}).catch(function(){msg('تنظیمات آنلاین در دسترس نیست؛ امکان ادامه همچنان فعال است.',true);});
-// VERSION I50S7: final safety net — guarantee no loader blocks the UI, and force the loading state off on failure/load.
+// VERSION I51S7: final safety net — guarantee no loader blocks the UI, and force the loading state off on failure/load.
 window.addEventListener('load',function(){var o=document.getElementById('page-loader');if(o)o.remove();htmlEl.classList.remove('is-loading','flow-loading');});
 window.addEventListener('error',function(){var o=document.getElementById('page-loader');if(o)o.remove();htmlEl.classList.remove('is-loading','flow-loading');});
 })();
   </script>
-<!-- VERSION I50S7 -->
+<!-- VERSION I51S7 -->
 </body>
 </html>
