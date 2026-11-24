@@ -58,6 +58,7 @@
     .footer-mobile, .footer-version { display:inline-flex; align-items:center; height:20px; line-height:20px; }
     .footer-separator { display:block; width:1px; height:14px; flex:0 0 1px; background:#cbd1dc; }
     .footer-logo { display:block; width:22px; height:21px; flex:0 0 22px; object-fit:contain; margin:0; background:transparent; vertical-align:middle; align-self:center; }
+    .project-logo { display:block; width:min(100%,440px); height:auto; max-height:220px; object-fit:contain; margin:0 auto 18px; background:transparent; }
     /* ---- VERSION I51S7: no loading overlay. The full-screen loader has been removed; nothing can block the page. ---- */
 
     /* VERSION I51S7 multi-step registration controls */
@@ -111,6 +112,7 @@
         <img class="poster" src="poster-mobile-800.webp" srcset="poster-mobile-800.webp 800w, poster-mobile-1000.webp 1000w" sizes="(max-width: 570px) 100vw, 570px" width="1000" height="562" alt="پوستر برنامه" loading="eager" decoding="async" fetchpriority="high" onerror="this.hidden=true">
       </div>
       <div class="content">
+        <img id="project-logo" class="project-logo" src="logo.png" alt="فضای مجازی کلخورانی های تاریخ ساز" loading="eager" decoding="async" onerror="this.hidden=true">
         <h1 id="project-title">قرآن</h1>
         <p id="project-subtitle" class="subtitle" hidden></p>
         <div id="deadline" class="deadline" hidden><span id="deadline-text"></span><div id="countdown" class="countdown" role="timer" aria-live="off" hidden></div></div>
