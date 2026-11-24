@@ -1,6 +1,6 @@
 <!doctype html>
-<!-- index.html — VERSION I51S7 (complete multi-step registration flow) -->
-<!-- VERSION I51S7: loading overlay removed from DOM; Continue is always active and transitions instantly to the National ID screen. -->
+<!-- index.html — VERSION I52S7 (complete multi-step registration flow) -->
+<!-- VERSION I52S7: loading overlay removed from DOM; Continue is always active and transitions instantly to the National ID screen. -->
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
@@ -59,9 +59,9 @@
     .footer-separator { display:block; width:1px; height:14px; flex:0 0 1px; background:#cbd1dc; }
     .footer-logo { display:block; width:22px; height:21px; flex:0 0 22px; object-fit:contain; margin:0; background:transparent; vertical-align:middle; align-self:center; }
     .project-logo { display:block; width:min(100%,440px); height:auto; max-height:220px; object-fit:contain; margin:0 auto 18px; background:transparent; }
-    /* ---- VERSION I51S7: no loading overlay. The full-screen loader has been removed; nothing can block the page. ---- */
+    /* ---- VERSION I52S7: no loading overlay. The full-screen loader has been removed; nothing can block the page. ---- */
 
-    /* VERSION I51S7 multi-step registration controls */
+    /* VERSION I52S7 multi-step registration controls */
     .flow-form { width:100%; display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:16px; }
     .flow-label { width:min(100%,420px); color:#edf0f4; font-weight:700; text-align:center; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
     .flow-input { display:block; width:min(100%,420px); min-height:52px; padding:12px 16px; border:1px solid #cbd5e1; border-radius:12px; background:#fff; color:#172033; text-align:center; direction:ltr; outline:none; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
@@ -94,7 +94,7 @@
   
     .flow-actions .flow-button.primary{background:#1d4ed8;color:#fff}.registration-actions .flow-button.primary{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff}.flow-actions.editing{opacity:.4;pointer-events:none}.edit-name{border:0;border-radius:8px;padding:9px 16px;cursor:pointer;color:#000!important;font-weight:900}.edit-name[aria-pressed="true"]{background:#20c997!important;color:#000!important}.name-editor{margin:12px auto}.name-editor small{display:block;margin-top:6px;color:#52616b}.name-edit-input:focus{caret-color:#111;outline:2px solid #20c997}.selection-actions{margin-top:18px}.participant-name{margin:10px 0}.outside-flow-actions{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;margin-top:14px}.outside-flow-actions[hidden]{display:none}.outside-flow-actions .flow-button{display:block;width:min(100%,420px);min-height:54px}.cancel-choice{background:#fff7ed;border-color:#fdba74;color:#9a3412}.flow-input#part-count[type="text"],select.flow-input#part-count{appearance:none;-webkit-appearance:none;background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='m7 11 9 10 9-10' fill='none' stroke='%231d4ed8' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center;background-size:30px 30px;padding-left:58px;cursor:pointer}.single-warning{display:block;width:min(100%,420px);margin:12px auto 0;padding:10px 14px;border:1px solid #f59e0b;border-radius:10px;background:#fffbeb;color:#92400e;font-weight:800;line-height:1.8} .participant-name{margin:10px 0}
 
-    /* VERSION I51S7 visual fixes */
+    /* VERSION I52S7 visual fixes */
     .participant-name { display:inline-flex; align-items:center; justify-content:center; gap:12px; flex-wrap:nowrap; white-space:nowrap; max-width:100%; }
     .participant-name strong { display:inline-block; }
     .quran-stepper { display:flex; flex-direction:row; direction:ltr; align-items:center; justify-content:center; gap:10px; width:min(100%,420px); margin:8px auto; }
@@ -105,7 +105,7 @@
   </style>
 </head>
 <body>
-  <!-- VERSION I51S7: NO #page-loader element is rendered, so it can never trap the user or block clicks. -->
+  <!-- VERSION I52S7: NO #page-loader element is rendered, so it can never trap the user or block clicks. -->
   <main class="page">
     <article class="card" aria-labelledby="project-title">
       <div class="poster-wrap">
@@ -143,7 +143,7 @@
         <footer class="site-footer" aria-label="اطلاعات نسخه و تماس">
           <span class="footer-mobile" dir="ltr"><bdi>+989122166771</bdi></span>
           <span class="footer-separator" aria-hidden="true"></span>
-          <span class="footer-version" dir="ltr">Version I52S7</span>
+          <span class="footer-version" dir="ltr">Version I52<span id="script-version">S7</span></span>
           <span class="footer-separator" aria-hidden="true"></span>
           <img class="footer-logo" src="logo-1.png" alt="لوگو" onerror="this.hidden=true">
         </footer>
@@ -153,7 +153,7 @@
   <script>
 (function(){
 'use strict';
-// VERSION I51S7: explicitly remove any stray full-page loader that could ever exist.
+// VERSION I52S7: explicitly remove any stray full-page loader that could ever exist.
 var overlay=document.getElementById('page-loader');if(overlay){overlay.remove();}
 var htmlEl=document.documentElement;htmlEl.classList.remove('is-loading','flow-loading');
 
@@ -219,7 +219,7 @@ function back(){
   nationalId='';
   choice='';
 }
-// VERSION I51S7: Page 2 real <form>, submit handler sends JSONP action=verify (and registration branch sends action=register).
+// VERSION I52S7: Page 2 real <form>, submit handler sends JSONP action=verify (and registration branch sends action=register).
 function validateField(input,feedback,kind){
  var value=input.value.trim(),valid=false,message='';
  if(kind==='nid'){value=ascii(value).replace(/\s/g,'');valid=/^\d{10}$/.test(value);message=valid?'آفرین، کد ملی را طبق نمونه وارد کردی.':'کد ملی را طبق نمونه وارد نکردی.';}
@@ -251,10 +251,19 @@ edit.style.cssText='background:#ffc107;color:#000';edit.onclick=function(){if(!e
 content.querySelectorAll('[data-c]').forEach(function(b){b.onclick=function(){if(!editor.hidden)return;showSelection(b.dataset.c);};});next.hidden=true;
 var cancel=document.getElementById('choices-cancel');if(cancel)cancel.onclick=back;
 }
-function showSelection(kind){var single=kind==='single',titleText=single?'انتخاب جزء تکی':'انتخاب ختم کامل قرآن',field=single?'<label for="part-count">تعداد جزء</label><select class="flow-input" id="part-count">'+Array.from({length:30},function(_,i){return '<option value="'+(i+1)+'">'+fa(i+1)+' جزء</option>';}).join('')+'</select><small class="single-warning">شما در حال انتخاب تعداد جزءها هستید، نه شماره جزء.</small>':'<label for="part-count">تعداد ختم کامل قرآن</label><div class="quran-stepper" dir="ltr" style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px;"><button type="button" class="stepper-button" id="part-increment">+</button><input class="flow-input" id="part-count" type="number" min="1" max="30" value="1" readonly><button type="button" class="stepper-button" id="part-decrement">−</button></div><small>تعداد ختم‌های کامل را انتخاب کنید.</small>';
-enter(titleText,'<p class="participant-name">'+registeredName+'</p>'+field,single?'single-selection':'full-selection');next.hidden=true;if(!single){var countInput=document.getElementById('part-count');document.getElementById('part-decrement').onclick=function(){countInput.value=Math.max(1,Math.min(30,(parseInt(countInput.value,10)||1)-1));};document.getElementById('part-increment').onclick=function(){countInput.value=Math.max(1,Math.min(30,(parseInt(countInput.value,10)||1)+1));};}document.getElementById('selection-back').onclick=back;document.getElementById('final-submit').onclick=function(){alert('ذخیره‌سازی آنلاین در نسخهٔ بعدی اضافه می‌شود.');};}
+function showSelection(kind){var single=kind==='single',titleText=single?'انتخاب جزء تکی':'انتخاب ختم کامل قرآن',label=single?'تعداد جزء':'تعداد ختم کامل قرآن',note=single?'تعداد جزءهای موردنظر را انتخاب کنید.':'تعداد ختم‌های کامل را انتخاب کنید.',field='<label for="part-count">'+label+'</label><div class="quran-stepper" dir="ltr"><button type="button" class="stepper-button" id="part-increment" aria-label="افزایش">+</button><input class="flow-input" id="part-count" type="number" min="1" max="30" value="1" readonly><button type="button" class="stepper-button" id="part-decrement" aria-label="کاهش">−</button></div><small>'+note+'</small>'+(single?'<small class="single-warning">شما در حال انتخاب تعداد جزءها هستید، نه شماره جزء.</small>':'');
+enter(titleText,'<p class="participant-name">'+registeredName+'</p>'+field,single?'single-selection':'full-selection');next.hidden=true;var countInput=document.getElementById('part-count');document.getElementById('part-decrement').onclick=function(){countInput.value=Math.max(1,Math.min(30,(parseInt(countInput.value,10)||1)-1));};document.getElementById('part-increment').onclick=function(){countInput.value=Math.max(1,Math.min(30,(parseInt(countInput.value,10)||1)+1));};document.getElementById('selection-back').onclick=back;document.getElementById('final-submit').onclick=participate;}
 
 var pendingJsonp=null;
+async function participate(){
+ if((state!=='single-selection'&&state!=='full-selection')||busy)return;
+ var button=document.getElementById('final-submit'),countInput=document.getElementById('part-count');
+ var count=Math.max(1,Math.min(30,parseInt(countInput&&countInput.value,10)||1));
+ busy=true;if(button){button.disabled=true;button.textContent='در حال ثبت…';}
+ try{var d=await jsonp('participate',{nationalId:nationalId,participantName:registeredName,choice:state==='single-selection'?'single':'full',count:count}),e=responseError(d);if(e)throw Error(e);if(button){button.textContent='ثبت شد';}msg('مشارکت با موفقیت ثبت شد.',false);}
+ catch(err){msg(err.message||'ثبت مشارکت ممکن نشد.',true);if(button){button.disabled=false;button.textContent='ثبت نهایی';}}
+ finally{busy=false;}
+}
 function jsonp(action,params){return new Promise(function(resolve,reject){
  if(pendingJsonp){reject(Error('درخواست دیگری در حال انجام است؛ کمی بعد دوباره تلاش کنید.'));return;}
  var u=new URL(endpoint);u.searchParams.set('action',action);Object.keys(params).forEach(function(k){u.searchParams.set(k,params[k]);});
@@ -317,13 +326,13 @@ function jalCal(jy){var breaks=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635
 function jalaliTimestamp(y,mo,day,hh,mm,ss){if(!Number.isInteger(y)||!Number.isInteger(mo)||!Number.isInteger(day)||y<1||mo<1||mo>12||day<1)return NaN;var cal=jalCal(y);if(!cal)return NaN;var max=mo<=6?31:(mo<=11?30:(cal.leap===0?30:29));if(day>max)return NaN;var elapsed=(mo<=7?(mo-1)*31:186+(mo-7)*30)+(day-1),d=new Date(0);d.setUTCFullYear(cal.gy,2,cal.march+elapsed);return gregorianTimestamp(d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate(),hh,mm,ss);}
 function updateCountdown(value){if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}var end=parseDeadline(value);deadline.hidden=false;countdown.hidden=false;if(!Number.isFinite(end)){countdown.textContent='تاریخ مهلت ثبت‌نام قابل تشخیص نیست.';return;}function tick(){var left=end-Date.now();if(left<=0){countdown.textContent='مهلت ثبت‌نام به پایان رسیده است.';if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}return;}var sec=Math.floor(left/1000),days=Math.floor(sec/86400);sec%=86400;var h=Math.floor(sec/3600);sec%=3600;var min=Math.floor(sec/60);sec%=60;countdown.textContent='زمان باقی‌مانده: '+days+' روز و '+h+' ساعت و '+min+' دقیقه و '+sec+' ثانیه';}tick();if(end>Date.now())countdownTimer=setInterval(tick,1000);}
 window.qoranReceiveSettings=function(d){if(!d||d.ok===false)return;var by=d.byCell||{},t=d.title||by.B2,sub=d.subtitle||by.B3,r=d.rules||by.B4;if(t){title.textContent=fa(t);document.title=fa(t);}if(sub){subtitle.textContent=fa(sub);subtitle.hidden=false;}if(r){rules.textContent=fa(Array.isArray(r)?r.join('\n'):String(r));}var dl=d.deadline||by.B5;if(dl){deadlineText.textContent='مهلت ثبت‌نام: '+fa(dl);deadline.hidden=false;updateCountdown(dl);}var versionNumber=by.B6;var sv=versionNumber!==undefined&&versionNumber!==null&&String(versionNumber).trim()!==''?'S'+String(versionNumber).trim():'S7';document.getElementById('script-version').textContent=sv;};
-// VERSION I51S7: settings load is fully asynchronous and never shows any overlay, never disables Continue.
+// VERSION I52S7: settings load is fully asynchronous and never shows any overlay, never disables Continue.
 fetch('config.txt?_='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw Error();return r.text();}).then(function(raw){var u=new URL(raw.trim());if(u.protocol!=='https:'||!u.pathname.endsWith('/exec'))throw Error();u.searchParams.set('callback','qoranReceiveSettings');var x=document.createElement('script');x.src=u.href;x.onerror=function(){msg('تنظیمات آنلاین بارگذاری نشد؛ امکان ادامه همچنان فعال است.',true);};document.head.appendChild(x);}).catch(function(){msg('تنظیمات آنلاین در دسترس نیست؛ امکان ادامه همچنان فعال است.',true);});
-// VERSION I51S7: final safety net — guarantee no loader blocks the UI, and force the loading state off on failure/load.
+// VERSION I52S7: final safety net — guarantee no loader blocks the UI, and force the loading state off on failure/load.
 window.addEventListener('load',function(){var o=document.getElementById('page-loader');if(o)o.remove();htmlEl.classList.remove('is-loading','flow-loading');});
 window.addEventListener('error',function(){var o=document.getElementById('page-loader');if(o)o.remove();htmlEl.classList.remove('is-loading','flow-loading');});
 })();
   </script>
-<!-- VERSION I51S7 -->
+<!-- VERSION I52S7 -->
 </body>
 </html>
