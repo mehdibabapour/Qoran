@@ -1,0 +1,302 @@
+<!doctype html>
+<!-- index.html — VERSION I44 — I44S7 (complete multi-step registration flow) -->
+<!-- VERSION I44: loading overlay removed from DOM; Continue is always active and transitions instantly to the National ID screen. -->
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7fb">
+  <meta name="description" content="صفحه معرفی پروژه و نمایش تنظیمات">
+  <title>معرفی پروژه</title>
+  <style>
+    :root { color-scheme: light; --ink:#172033; --muted:#647087; --line:#e8ebf2; }
+    * , *::before, *::after { box-sizing:border-box; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
+    button,input,textarea,select { font:inherit; }
+    html { font-size:17px; scroll-behavior:smooth; text-align:center; }
+    body { margin:0; min-height:100vh; padding:calc(clamp(16px,4vw,42px) + env(safe-area-inset-top)) 14px calc(22px + env(safe-area-inset-bottom)); background:radial-gradient(ellipse at 50% -10%,#e9efff 0,transparent 48%),#f6f7fb; color:var(--ink); font-family:Calibri,'Segoe UI',Tahoma,sans-serif; font-weight:500; -webkit-font-smoothing:antialiased; text-align:center; }
+    .page { width:min(100%,760px); margin-inline:auto; }
+    .card { overflow:hidden; background:#fff; border:1px solid rgba(226,231,241,.9); border-radius:24px; box-shadow:0 16px 48px rgba(27,43,77,.08); }
+    .poster-wrap { padding:clamp(12px,3vw,22px); padding-bottom:0; height:auto; aspect-ratio:auto; }
+    .poster { display:block; width:100%; max-width:100%; height:auto; max-height:min(58vh,620px); object-fit:contain; margin:auto; border-radius:16px; background:#f1f3f8; }
+    .content { display:flex; flex-direction:column; align-items:center; padding:clamp(22px,5vw,42px); text-align:center; }
+    h1 { width:100%; margin:0; font-size:clamp(1.55rem,5vw,2.25rem); line-height:1.55; font-weight:900; letter-spacing:-.03em; text-align:center; }
+    .subtitle { width:100%; margin:10px 0 0; color:var(--muted); font-size:clamp(1rem,2.8vw,1.12rem); font-weight:500; line-height:2; white-space:pre-line; text-align:center; }
+    .deadline { display:block; width:min(100%,560px); margin:14px 0 0; padding:10px clamp(14px,3vw,20px); border:1px solid #414750; border-radius:12px; background:#252a31; color:#f5f6f8; font-size:clamp(.98rem,2.7vw,1.08rem); font-weight:700; line-height:1.8; text-align:center; direction:rtl; overflow-wrap:anywhere; }
+    .deadline[hidden] { display:none; }
+    .countdown { margin-top:5px; color:#fff; font-size:.96em; font-weight:700; }
+    .countdown[hidden] { display:none; }
+    /* Rules stay right-aligned/dir rtl as required. */
+    .rules { width:100%; margin-top:26px; padding:20px clamp(16px,4vw,24px); border:1px solid #414750; border-radius:18px; background:#252a31; text-align:right; direction:rtl; }
+    .rules-heading { margin:0 0 10px; color:#f5f6f8; font-size:1rem; font-weight:900; text-align:right; direction:rtl; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
+    .rules-content { color:#edf0f4; font-size:.98rem; font-weight:500; line-height:2; white-space:pre-wrap; overflow-wrap:anywhere; text-align:right; direction:rtl; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
+    .rules-loading-dots { display:inline-flex; direction:ltr; margin-inline-start:.15em; gap:.08em; vertical-align:baseline; }
+    .rules-loading-dots span { display:inline-block; opacity:.22; animation:rules-dot-pulse 1.15s infinite ease-in-out; }
+    .rules-loading-dots span:nth-child(2) { animation-delay:.18s; }
+    .rules-loading-dots span:nth-child(3) { animation-delay:.36s; }
+    @keyframes rules-dot-pulse { 0%,60%,100% { opacity:.22; transform:translateY(0); } 30% { opacity:1; transform:translateY(-.18em); } }
+    .rules :is(p,li,ul,ol,div,span,strong,b,em) { color:#edf0f4 !important; text-align:right !important; direction:rtl !important; unicode-bidi:isolate; }
+    .flow-panel { width:100%; margin-top:26px; padding:20px clamp(16px,4vw,24px); border:1px solid #414750; border-radius:18px; background:#252a31; text-align:center; direction:rtl; }
+    .flow-panel[hidden] { display:none; }
+    .flow-content { color:#edf0f4; display:flex; flex-direction:column; align-items:center; text-align:center; direction:rtl; }
+    .flow-content :is(p,div,span,strong,b,em,label) { text-align:center; direction:rtl; }
+    .flow-content .flow-label { color:#edf0f4; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
+    .flow-content .flow-input { color:#172033; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
+    .flow-content .flow-help { color:#edf0f4; }
+    .status { width:100%; min-height:27px; margin:15px 0 0; text-align:center; color:var(--muted); font-size:.88rem; font-weight:500; line-height:1.8; }
+    .status.error { color:#b42318; }
+    .status:empty { display:none; }
+    .action-row { display:flex; justify-content:center; width:100%; margin-top:18px; }
+    .next { min-width:min(100%,220px); min-height:54px; padding:13px 28px; border:0; border-radius:15px; color:#fff; background:linear-gradient(135deg,#3b82f6,#1d4ed8); box-shadow:0 8px 18px rgba(37,99,235,.22); font:900 1.05rem Calibri,'Segoe UI',Tahoma,sans-serif; cursor:pointer; touch-action:manipulation; transition:transform .15s,box-shadow .15s,opacity .15s; text-align:center; }
+    .action-row.nid-actions { flex-direction:column; align-items:center; gap:12px; }
+    .nid-back,.nid-verify { display:block; width:min(100%,420px); min-width:0; height:54px; min-height:54px; margin:0; flex:0 0 54px; }
+    #back[hidden] { display:none !important; }
+    .nid-back { color:#172033; background:#fff; border:1px solid #cbd5e1; box-shadow:none; }
+    .next:not(:disabled):active { transform:scale(.97); opacity:.88; transition:transform .1s,opacity .1s; }
+    .next:focus-visible { outline:3px solid #93c5fd; outline-offset:3px; }
+    .next:disabled { cursor:not-allowed; opacity:.48; box-shadow:none; }
+    .logo { display:block; width:min(100%,120px); max-height:100px; object-fit:contain; margin:18px auto 8px; background:transparent; }
+    .version { margin:0; color:#8992a3; font-size:.85rem; font-weight:500; line-height:1.7; text-align:center; unicode-bidi:isolate; }
+    .version bdi { direction:ltr; unicode-bidi:isolate; }
+    /* ---- VERSION I44: no loading overlay. The full-screen loader has been removed; nothing can block the page. ---- */
+
+    /* VERSION I44 multi-step registration controls */
+    .flow-form { width:100%; display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:16px; }
+    .flow-label { width:min(100%,420px); color:#edf0f4; font-weight:700; text-align:center; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
+    .flow-input { display:block; width:min(100%,420px); min-height:52px; padding:12px 16px; border:1px solid #cbd5e1; border-radius:12px; background:#fff; color:#172033; text-align:center; direction:ltr; outline:none; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
+    .flow-input:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.18); }
+    .flow-input.invalid { border:2px solid #b42318; }
+    .flow-input.valid { border:2px solid #15803d; }
+    .field-feedback { width:min(100%,420px); min-height:1.4em; margin:-7px 0 2px; font-size:.88rem; line-height:1.5; }
+    .field-feedback.error { color:#f87171; }
+    .field-feedback.success { color:#4ade80; }
+    .flow-note { margin:0; color:#edf0f4; line-height:1.8; text-align:center; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
+    .flow-actions { display:flex; flex-direction:column; align-items:center; gap:12px; width:min(100%,420px); margin:16px auto 0; }
+    .flow-actions[hidden] { display:none !important; }
+    .flow-actions .flow-button { display:block; width:100%; min-height:54px; }
+    .registration-actions { margin-top:16px; }
+    .prompt-actions { display:flex; flex-direction:column; align-items:center; gap:12px; width:100%; margin-top:14px; }
+    .prompt-actions .flow-button { display:block; width:min(100%,420px); min-height:54px; }
+    .prompt-actions[hidden] { display:none; }
+    .flow-button { min-height:48px; padding:10px 18px; border:1px solid #cbd5e1; border-radius:12px; background:#fff; color:#172033; font-weight:800; cursor:pointer; text-align:center; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
+    .flow-button.primary { border-color:#1d4ed8; background:#1d4ed8; color:#fff; }
+    .flow-button.selected { outline:3px solid #93c5fd; border-color:#1d4ed8; background:#eff6ff; color:#1d4ed8; }
+    .flow-button:focus-visible { outline:3px solid #93c5fd; outline-offset:2px; }
+    .next:focus,.flow-button.primary:focus { outline:3px solid #93c5fd; outline-offset:3px; }
+    .next:active,.flow-button.primary:active { transform:scale(.97); opacity:.88; transition:transform .1s,opacity .1s; }
+    .national-id-display { font-size:1.15rem; }
+    .national-id-display strong { display:inline-block; margin-inline:5px; font-size:1.45em; font-weight:900; color:#fff; }
+    .flow-help { width:100%; color:#edf0f4; font-size:.9rem; text-align:center; font-family:Calibri,'Segoe UI',Tahoma,sans-serif; }
+
+    @media (min-width:700px) { .content { padding-top:34px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+  
+    .flow-actions .flow-button.primary{background:#1d4ed8;color:#fff}.registration-actions .flow-button.primary{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff}.flow-actions.editing{opacity:.4;pointer-events:none}.edit-name{border:0;border-radius:8px;padding:9px 16px;cursor:pointer;color:#000!important;font-weight:900}.edit-name[aria-pressed="true"]{background:#20c997!important;color:#000!important}.name-editor{margin:12px auto}.name-editor small{display:block;margin-top:6px;color:#52616b}.name-edit-input:focus{caret-color:#111;outline:2px solid #20c997}.selection-actions{margin-top:18px}.participant-name{margin:10px 0}.outside-flow-actions{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;margin-top:14px}.outside-flow-actions[hidden]{display:none}.outside-flow-actions .flow-button{display:block;width:min(100%,420px);min-height:54px}.cancel-choice{background:#fff7ed;border-color:#fdba74;color:#9a3412}.flow-input#part-count[type="text"],select.flow-input#part-count{appearance:none;-webkit-appearance:none;background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='m7 11 9 10 9-10' fill='none' stroke='%231d4ed8' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center;background-size:30px 30px;padding-left:58px;cursor:pointer}.single-warning{display:block;width:min(100%,420px);margin:12px auto 0;padding:10px 14px;border:1px solid #f59e0b;border-radius:10px;background:#fffbeb;color:#92400e;font-weight:800;line-height:1.8} .participant-name{margin:10px 0}
+
+    /* VERSION I44 visual fixes */
+    .participant-name { display:inline-flex; align-items:center; justify-content:center; gap:12px; flex-wrap:nowrap; white-space:nowrap; max-width:100%; }
+    .participant-name strong { display:inline-block; }
+    .quran-stepper { display:flex; flex-direction:row; direction:ltr; align-items:center; justify-content:center; gap:10px; width:min(100%,420px); margin:8px auto; }
+    .quran-stepper #part-count { flex:1; min-width:0; text-align:center; }
+    .stepper-button { width:54px; height:54px; flex:0 0 54px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; color:#172033; font-size:1.7rem; font-weight:800; cursor:pointer; }
+    .flow-input, #national-id, #full-name, #mobile, .name-edit-input { font-size:1.2rem; font-weight:700; padding:16px 18px; }
+    .flow-input { min-height:60px; }
+  </style>
+</head>
+<body>
+  <!-- VERSION I44: NO #page-loader element is rendered, so it can never trap the user or block clicks. -->
+  <main class="page">
+    <article class="card" aria-labelledby="project-title">
+      <div class="poster-wrap">
+        <img class="poster" src="poster-mobile-800.webp" srcset="poster-mobile-800.webp 800w, poster-mobile-1000.webp 1000w" sizes="(max-width: 570px) 100vw, 570px" width="1000" height="562" alt="پوستر برنامه" loading="eager" decoding="async" fetchpriority="high" onerror="this.hidden=true">
+      </div>
+      <div class="content">
+        <h1 id="project-title">قرآن</h1>
+        <p id="project-subtitle" class="subtitle" hidden></p>
+        <div id="deadline" class="deadline" hidden><span id="deadline-text"></span><div id="countdown" class="countdown" role="timer" aria-live="off" hidden></div></div>
+        <section class="rules" id="rules-panel" aria-labelledby="rules-heading">
+          <h2 id="rules-heading" class="rules-heading">قوانین و توضیحات</h2>
+          <div id="rules-content" class="rules-content" role="status" aria-live="polite">قوانین در حال بارگذاری است<span class="rules-loading-dots" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span></div>
+        </section>
+        <section class="flow-panel" id="flow-panel" aria-labelledby="flow-heading" hidden>
+          <h2 id="flow-heading" class="rules-heading"></h2>
+          <div id="flow-content" class="flow-content"></div>
+        </section>
+        <div id="choices-cancel-wrap" class="flow-actions outside-flow-actions" hidden>
+          <button type="button" class="flow-button cancel-choice" id="choices-cancel">انصراف</button>
+        </div>
+        <div id="selection-actions" class="flow-actions outside-flow-actions selection-actions" hidden>
+          <button type="button" class="flow-button primary" id="final-submit">ثبت نهایی</button>
+          <button type="button" class="flow-button" id="selection-back">بازگشت</button>
+        </div>
+        <div id="registration-actions" class="flow-actions registration-actions" hidden>
+          <button type="submit" class="flow-button primary" form="reg-form">ثبت‌نام</button>
+          <button type="button" class="flow-button" id="back-prompt">بازگشت</button>
+        </div>
+        <div class="prompt-actions" id="prompt-actions" hidden></div>
+        <div class="action-row">
+          <button id="back" class="next nid-back" type="button" hidden>بازگشت به قوانین</button>
+          <button id="next-button" class="next" type="button">ادامه</button>
+        </div>
+        <img id="project-logo" class="logo" src="لوگو%20دشت%20تو.png" alt="لوگوی پروژه" onerror="this.hidden=true">
+        <div class="version-brand" style="display:flex;align-items:center;justify-content:center;gap:8px"><img src="لوگو%20دشت%20تو.png" width="64" height="64" alt="لوگو" style="display:block;width:64px;height:64px;flex:0 0 64px;object-fit:contain;background:transparent"><p class="version" dir="ltr"><bdi dir="ltr">+۹۸۹۱۲۲۱۶۶۷۷۱</bdi> <span dir="ltr" style="unicode-bidi:isolate">Version I44 <span id="script-version" dir="ltr" style="unicode-bidi:isolate">S7</span></span></p>
+      </div>
+    </article>
+  </main>
+  <noscript><p style="color:#b42318;text-align:center;">جاوااسکریپت برای ادامه لازم است.</p></noscript>
+  <script>
+(function(){
+'use strict';
+// VERSION I44: explicitly remove any stray full-page loader that could ever exist.
+var overlay=document.getElementById('page-loader');if(overlay){overlay.remove();}
+var htmlEl=document.documentElement;htmlEl.classList.remove('is-loading','flow-loading');
+
+var promptActions=document.getElementById('prompt-actions');
+var title=document.getElementById('project-title'), subtitle=document.getElementById('project-subtitle'), deadline=document.getElementById('deadline'), deadlineText=document.getElementById('deadline-text'), countdown=document.getElementById('countdown'), rules=document.getElementById('rules-content'), panel=document.getElementById('flow-panel'), heading=document.getElementById('flow-heading'), content=document.getElementById('flow-content'), status=null, next=document.getElementById('next-button'), rulesPanel=document.getElementById('rules-panel');
+var state='intro',nationalId='',choice='',busy=false,registeredName=''; var endpoint='https://script.google.com/macros/s/AKfycbwxBI-cvDkR4GihzMtG_NB2jYS97bnctAj-hvCIvb6Dz4s6IlmWm97v6mvBkKtcPUnoKQ/exec';
+function fa(v){return String(v).replace(/[0-9]/g,function(x){return '۰۱۲۳۴۵۶۷۸۹'[+x];});}
+function ascii(v){return String(v).replace(/[۰-۹٠-٩]/g,function(x){var n=x.charCodeAt(0);return String(n>=1632&&n<=1641?n-1632:n-1776);});}
+var backButton=document.getElementById('back');
+function msg(t,err){ /* Flow-level notices are intentionally not shown beside unrelated fields. */ }
+function rulesVisible(v){if(rulesPanel)rulesPanel.hidden=!v;}
+function enter(titleText,html,s){var ra=document.getElementById('registration-actions');if(ra)ra.hidden=(s!=='registration');var cc=document.getElementById('choices-cancel-wrap'),sa=document.getElementById('selection-actions');if(cc)cc.hidden=(s!=='choices');if(sa)sa.hidden=(s!=='single-selection'&&s!=='full-selection');
+  heading.textContent=titleText;
+  content.innerHTML=html;
+  promptActions.hidden=true;
+  promptActions.innerHTML='';
+  panel.hidden=false;
+  rulesVisible(false);
+  state=s;
+  msg('');
+  var actions=next.parentNode;
+  actions.classList.toggle('nid-actions',s==='nid');
+  backButton.hidden=s!=='nid';
+  backButton.style.display=s==='nid'?'block':'none';
+  next.hidden=(s==='prompt'||s==='registration');
+  next.disabled=false;
+  next.textContent=s==='nid'?'بررسی کد ملی':(s==='choices'?'ادامه':'ادامه');
+  next.classList.toggle('nid-verify',s==='nid');
+}
+function back(){
+  state='intro';
+  panel.hidden=true;
+  promptActions.hidden=true;
+  promptActions.innerHTML='';
+  rulesVisible(true);
+  next.hidden=false;
+  next.disabled=false;
+  next.textContent='ادامه';
+  next.classList.remove('nid-verify');
+  next.parentNode.classList.remove('nid-actions');
+  backButton.hidden=true;
+  msg('');
+  nationalId='';
+  choice='';
+}
+// VERSION I44: Page 2 real <form>, submit handler sends JSONP action=verify (and registration branch sends action=register).
+function validateField(input,feedback,kind){
+ var value=input.value.trim(),valid=false,message='';
+ if(kind==='nid'){value=ascii(value).replace(/\s/g,'');valid=/^\d{10}$/.test(value);message=valid?'آفرین، کد ملی را طبق نمونه وارد کردی.':'کد ملی را طبق نمونه وارد نکردی.';}
+ else if(kind==='name'){valid=/^[\u0600-\u06FF]+(?:[ \u0600-\u06FF]+)*$/.test(value);message=valid?'آفرین، نام و نام خانوادگی را طبق نمونه وارد کردی.':'نام و نام خانوادگی را طبق نمونه وارد نکردی.';}
+ else {value=ascii(value).replace(/[\s-]/g,'');valid=/^09\d{9}$/.test(value);message=valid?'آفرین، شماره همراه را طبق نمونه وارد کردی.':'شماره همراه را طبق نمونه وارد نکردی.';}
+ input.classList.toggle('valid',valid);input.classList.toggle('invalid',!valid);feedback.className='field-feedback '+(valid?'success':'error');feedback.textContent=message;return valid;
+}
+function bindField(inputId,feedbackId,kind){var input=document.getElementById(inputId),feedback=document.getElementById(feedbackId);if(!input||!feedback)return;input.addEventListener('input',function(){validateField(input,feedback,kind);});input.addEventListener('blur',function(){validateField(input,feedback,kind);});return function(){return validateField(input,feedback,kind);};}
+function start(){
+enter('ورود کد ملی','<form id="nid-form" class="flow-form" novalidate><label class="flow-label" for="national-id">لطفاً کد ملی ۱۰ رقمی خود را وارد کنید.</label><input class="flow-input" id="national-id" name="nationalId" inputmode="numeric" autocomplete="off" maxlength="10" pattern="[0-9۰-۹٠-٩]{10}" dir="ltr" required><p class="field-feedback" id="national-id-feedback" aria-live="polite"></p></form>','nid');
+next.parentNode.classList.add('nid-actions');
+next.textContent='بررسی کد ملی';
+next.classList.add('nid-verify');
+var checkId=bindField('national-id','national-id-feedback','nid');document.getElementById('nid-form').addEventListener('submit',function(ev){ev.preventDefault();verify();});
+var inp=document.getElementById('national-id');if(inp){inp.addEventListener('input',function(){var f=document.getElementById('national-id-feedback');if(f.textContent)validateField(inp,f,'nid');});inp.focus();}
+}
+function showRegisterPrompt(){
+enter('ثبت‌نام جدید','<p class="flow-note">این کد ملی تاکنون در سامانه ثبت‌نام نشده است.</p><p class="flow-note national-id-display">کد ملی وارد شده: <strong dir="ltr">'+fa(nationalId)+'</strong></p><p class="flow-note">در سامانه ثبت‌نام نشده است. آیا مایل به ثبت‌نام هستید؟</p>','prompt');
+promptActions.innerHTML='<button type="button" class="flow-button" id="edit-nid">ویرایش کد ملی</button><button type="button" class="flow-button primary" id="yes">بله، ثبت‌نام می‌کنم</button><button type="button" class="flow-button" id="no">خیر، بازگشت به قوانین</button>';promptActions.hidden=false;
+document.getElementById('edit-nid').onclick=function(){var id=nationalId;start();var i=document.getElementById('national-id');i.value=fa(id);};document.getElementById('yes').onclick=function(){showRegistrationForm();};document.getElementById('no').onclick=back;
+}
+function showRegistrationForm(){
+enter('تکمیل ثبت‌نام','<p class="flow-note">کد ملی: <strong dir="ltr">'+fa(nationalId)+'</strong></p><form id="reg-form" class="flow-form" novalidate><label class="flow-label" for="full-name">نام و نام خانوادگی</label><input class="flow-input" id="full-name" name="fullName" autocomplete="name" placeholder="مثال: علی رضایی" required><p class="field-feedback" id="full-name-feedback" aria-live="polite"></p><label class="flow-label" for="mobile">شماره تلفن همراه</label><input class="flow-input" id="mobile" name="mobile" inputmode="tel" autocomplete="tel" placeholder="مثال: 09123456789" required><p class="field-feedback" id="mobile-feedback" aria-live="polite"></p></form>','registration');document.getElementById('registration-actions').hidden=false;document.getElementById('back-prompt').onclick=showRegisterPrompt;var checkName=bindField('full-name','full-name-feedback','name'),checkMobile=bindField('mobile','mobile-feedback','mobile');document.getElementById('reg-form').addEventListener('submit',function(ev){ev.preventDefault();register();});
+}
+function showChoices(){
+enter('یکی از دو روش مشارکت را انتخاب کنید','<div class="participant-name"><strong></strong> <button type="button" class="edit-name" aria-pressed="false">ویرایش نام</button></div><div class="name-editor" hidden><input class="flow-input name-edit-input" aria-label="نام و نام خانوادگی"><small>لطفاً نام را فقط به فارسی وارد کنید.</small></div><div class="flow-actions"><button type="button" class="flow-button primary" data-c="single">جزء تکی</button><button type="button" class="flow-button primary" data-c="full">ختم کامل قرآن</button></div>','choices');
+var nameBox=content.querySelector('.participant-name strong'),edit=content.querySelector('.edit-name'),editor=content.querySelector('.name-editor'),input=content.querySelector('.name-edit-input'),options=content.querySelector('.flow-actions');nameBox.textContent=registeredName;input.value=registeredName;
+edit.style.cssText='background:#ffc107;color:#000';edit.onclick=function(){if(!editor.hidden){var v=input.value.trim();if(!/^[\u0600-\u06FF]+(?:[ \u0600-\u06FF]+)*$/.test(v)){input.focus();return;}registeredName=v;nameBox.textContent=v;editor.hidden=true;options.classList.remove('editing');edit.textContent='ویرایش نام';edit.setAttribute('aria-pressed','false');edit.style.cssText='background:#ffc107;color:#000';return;}editor.hidden=false;options.classList.add('editing');edit.textContent='اتمام ویرایش';edit.setAttribute('aria-pressed','true');edit.style.cssText='background:#20c997;color:#000';input.focus();};
+content.querySelectorAll('[data-c]').forEach(function(b){b.onclick=function(){if(!editor.hidden)return;showSelection(b.dataset.c);};});next.hidden=true;
+var cancel=document.getElementById('choices-cancel');if(cancel)cancel.onclick=function(){start();};
+}
+function showSelection(kind){var single=kind==='single',titleText=single?'انتخاب جزء تکی':'انتخاب ختم کامل قرآن',field=single?'<label for="part-count">تعداد جزء</label><select class="flow-input" id="part-count">'+Array.from({length:30},function(_,i){return '<option value="'+(i+1)+'">'+fa(i+1)+' جزء</option>';}).join('')+'</select><small class="single-warning">شما در حال انتخاب تعداد جزءها هستید، نه شماره جزء.</small>':'<label for="part-count">تعداد ختم کامل قرآن</label><div class="quran-stepper" dir="ltr" style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px;"><button type="button" class="stepper-button" id="part-increment">+</button><input class="flow-input" id="part-count" type="number" min="1" max="30" value="1" readonly><button type="button" class="stepper-button" id="part-decrement">−</button></div><small>تعداد ختم‌های کامل را انتخاب کنید.</small>';
+enter(titleText,'<p class="participant-name">'+registeredName+'</p>'+field,single?'single-selection':'full-selection');next.hidden=true;if(!single){var countInput=document.getElementById('part-count');document.getElementById('part-decrement').onclick=function(){countInput.value=Math.max(1,Math.min(30,(parseInt(countInput.value,10)||1)-1));};document.getElementById('part-increment').onclick=function(){countInput.value=Math.max(1,Math.min(30,(parseInt(countInput.value,10)||1)+1));};}document.getElementById('selection-back').onclick=showChoices;document.getElementById('final-submit').onclick=function(){alert('ذخیره‌سازی آنلاین در نسخهٔ بعدی اضافه می‌شود.');};}
+
+var pendingJsonp=null;
+function jsonp(action,params){return new Promise(function(resolve,reject){
+ if(pendingJsonp){reject(Error('درخواست دیگری در حال انجام است؛ کمی بعد دوباره تلاش کنید.'));return;}
+ var u=new URL(endpoint);u.searchParams.set('action',action);Object.keys(params).forEach(function(k){u.searchParams.set(k,params[k]);});
+ var sc=document.createElement('script'),done=false,callbackCalled=false,previous=window.qoranReceiveSettings;
+ function finish(err,data){if(done)return;done=true;clearTimeout(timer);sc.onload=sc.onerror=null;sc.remove();if(window.qoranReceiveSettings===receive)window.qoranReceiveSettings=previous;if(pendingJsonp&&pendingJsonp.finish===finish)pendingJsonp=null;err?reject(err):resolve(data);}
+ var timer=setTimeout(function(){finish(Error('پاسخی از سرویس دریافت نشد؛ اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.'));},10000);
+ pendingJsonp={finish:finish};
+ // Code-v5.gs accepts only this fixed callback; arbitrary callback names are rejected.
+ u.searchParams.set('callback','qoranReceiveSettings');
+ sc.onload=function(){if(!callbackCalled)finish(Error('سرویس پاسخ سازگار برای بررسی کد ملی نفرستاد.'));};
+ sc.onerror=function(){finish(Error('ارتباط با سرویس برقرار نشد.'));};
+ function receive(d){callbackCalled=true;finish(null,d);}
+ window.qoranReceiveSettings=receive;
+ sc.src=u.href;document.head.appendChild(sc);
+});}
+function responseError(d){if(!d||typeof d!=='object')return 'پاسخ سرویس معتبر نیست.';if(d.ok===false||d.success===false||d.error)return String(d.message||d.error||'درخواست ناموفق بود.');return '';}
+function isRegistered(d){if(d&&typeof d.ok==='boolean'&&!('registered'in d)&&!('isRegistered'in d)&&!('exists'in d)&&!('found'in d)&&!('alreadyRegistered'in d)&&('byCell'in d||'settings'in d||'title'in d))throw Error('سرور تنظیمات پاسخ داد اما API بررسی کد ملی (action=verify) در نسخهٔ مستقرشده موجود نیست.');for(var k of ['registered','isRegistered','exists','found','alreadyRegistered'])if(typeof d[k]==='boolean')return d[k];var v=String(d.status||d.result||'').toLowerCase();if(['registered','exists','found','already_registered'].includes(v))return true;if(['not_registered','not-found','not_found','new'].includes(v))return false;throw Error('وضعیت ثبت‌نام در پاسخ سرویس مشخص نیست.');}
+async function verify(){
+if(state!=='nid')return;
+var input=document.getElementById('national-id'),id=ascii(input?input.value:'').replace(/\s/g,'');
+if(!/^\d{10}$/.test(id)){if(input)validateField(input,document.getElementById('national-id-feedback'),'nid');if(input)input.focus();return;}validateField(input,document.getElementById('national-id-feedback'),'nid');
+nationalId=id;busy=true;next.disabled=true;msg('در حال بررسی…');
+try{var d=await jsonp('verify',{nationalId:id}),e=responseError(d);if(e)throw Error(e);if(isRegistered(d)){var nameSources=[d,d.data];registeredName='';for(var ni=0;ni<nameSources.length;ni++){var ns=nameSources[ni];if(!ns||typeof ns!=='object')continue;var keys=['name','fullName','participantName','registeredName'];for(var nk=0;nk<keys.length;nk++){var nv=ns[keys[nk]];if(typeof nv==='string'&&nv.trim()){registeredName=nv.trim();break;}}if(registeredName)break;}if(!registeredName)registeredName=id;showChoices();}else{showRegisterPrompt();}}
+catch(err){var feedback=document.getElementById('national-id-feedback');if(feedback&&state==='nid'){feedback.className='field-feedback error';feedback.textContent=err.message||'بررسی کد ملی ممکن نشد.';}msg(err.message||'بررسی کد ملی ممکن نشد.',true);if(state==='nid'&&busy){next.disabled=false;}}
+finally{busy=false;if(state==='nid'){next.disabled=false;}}
+}
+async function register(){
+if(state!=='registration'||!nationalId)return;
+var name=document.getElementById('full-name').value.trim(),mobile=ascii(document.getElementById('mobile').value).replace(/[\s-]/g,'');var validName=validateField(document.getElementById('full-name'),document.getElementById('full-name-feedback'),'name'),validMobile=validateField(document.getElementById('mobile'),document.getElementById('mobile-feedback'),'mobile');if(!validName){document.getElementById('full-name').focus();return;}if(!validMobile){document.getElementById('mobile').focus();return;}
+registeredName=name;busy=true;msg('در حال ثبت‌نام…');
+try{var d=await jsonp('register',{nationalId:nationalId,fullName:name,mobile:mobile}),e=responseError(d);if(e)throw Error(e);msg('ثبت‌نام با موفقیت انجام شد.',false);showChoices();}
+catch(err){msg(err.message||'ثبت‌نام ممکن نشد.',true);}
+finally{busy=false;}
+}
+backButton.addEventListener('click',back);
+next.addEventListener('click',function(){if(state==='intro')start();else if(state==='nid')verify();else if(state==='choices'&&choice){showSelection(choice);}});
+var countdownTimer=null;
+function parseDeadline(value){
+ if(value==null)return NaN;
+ var text=String(value).replace(/[۰-۹٠-٩]/g,function(c){var n=c.charCodeAt(0);return String(n>=1632&&n<=1641?n-1632:n-1776);}).replace(/[يى]/g,'ی').replace(/ك/g,'ک').trim();
+ var months={'فروردین':1,'اردیبهشت':2,'خرداد':3,'تیر':4,'مرداد':5,'شهریور':6,'مهر':7,'آبان':8,'آذر':9,'دی':10,'بهمن':11,'اسفند':12};
+ // Retain explicit ISO/Gregorian input support without interpreting Persian prose as browser-local time.
+ if(/^(?:\d{4}-\d\d-\d\d[Tt ]\d\d:\d\d(?::\d\d)?(?:\.\d+)?(?:Z|[+-]\d\d:?\d\d)?|\d{4}-\d\d-\d\d)$/.test(text)){var parsed=Date.parse(text);return Number.isFinite(parsed)?parsed:NaN;}
+ var clock=text.match(/(?:ساعت\s*)?(\d{1,2})\s*[:٫.]\s*(\d{2})(?:\s*[:٫.]\s*(\d{2}))?/),hh=clock?+clock[1]:0,mm=clock?+clock[2]:0,ss=clock&&clock[3]?+clock[3]:0;
+ if(hh>23||mm>59||ss>59)return NaN;
+ var m=text.match(/(\d{1,4})\s+([\u0600-\u06FF]+)\s+(\d{3,4})/),y,mo,day;
+ if(m&&months[m[2]]&&+m[1]<=31&&+m[3]>=1000){day=+m[1];mo=months[m[2]];y=+m[3];}
+ if(!mo){m=text.match(/(\d{3,4})\s+([\u0600-\u06FF]+)\s+(\d{1,2})/);if(m&&months[m[2]]){y=+m[1];mo=months[m[2]];day=+m[3];}}
+ if(mo)return jalaliTimestamp(y,mo,day,hh,mm,ss);
+ m=text.match(/(\d{3,4})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{1,2})/);
+ if(m){y=+m[1];mo=+m[2];day=+m[3];if(y<1600)return jalaliTimestamp(y,mo,day,hh,mm,ss);return gregorianTimestamp(y,mo,day,hh,mm,ss);}
+ m=text.match(/(\d{1,2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{3,4})/);
+ if(m&&+m[3]>=1000)return jalaliTimestamp(+m[3],+m[2],+m[1],hh,mm,ss);
+ return NaN;
+}
+// Gregorian components are created in UTC and shifted by Iran's fixed UTC+03:30 offset.
+function gregorianTimestamp(y,mo,day,hh,mm,ss){if(mo<1||mo>12||day<1||day>31||hh<0||hh>23||mm<0||mm>59||ss<0||ss>59)return NaN;var d=new Date(0);d.setUTCFullYear(y,mo-1,day);d.setUTCHours(hh,mm,ss,0);if(d.getUTCFullYear()!==y||d.getUTCMonth()!==mo-1||d.getUTCDate()!==day)return NaN;return d.getTime()-210*60000;}
+// jalaali-js jalCal arithmetic with its Gregorian-equivalent break years.
+function jalCal(jy){var breaks=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178];if(jy<breaks[0]||jy>=breaks[breaks.length-1])return null;var gy=jy+621,leapJ=-14,jp=breaks[0],jm=0,jump=0;for(var i=1;i<breaks.length;i++){jm=breaks[i];jump=jm-jp;if(jy<jm)break;leapJ+=Math.floor(jump/33)*8+Math.floor((jump%33)/4);jp=jm;}var n=jy-jp;leapJ+=Math.floor(n/33)*8+Math.floor(((n%33)+3)/4);if(jump%33===4&&jump-n===4)leapJ++;var leapG=Math.floor(gy/4)-Math.floor((Math.floor(gy/100)+1)*3/4)-150,march=20+leapJ-leapG;if(jump-n<6)n=n-jump+Math.floor((jump+4)/33)*33;var leap=((n+1)%33-1)%4;if(leap===-1)leap=4;return {leap:leap,gy:gy,march:march};}
+function jalaliTimestamp(y,mo,day,hh,mm,ss){if(!Number.isInteger(y)||!Number.isInteger(mo)||!Number.isInteger(day)||y<1||mo<1||mo>12||day<1)return NaN;var cal=jalCal(y);if(!cal)return NaN;var max=mo<=6?31:(mo<=11?30:(cal.leap===0?30:29));if(day>max)return NaN;var elapsed=(mo<=7?(mo-1)*31:186+(mo-7)*30)+(day-1),d=new Date(0);d.setUTCFullYear(cal.gy,2,cal.march+elapsed);return gregorianTimestamp(d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate(),hh,mm,ss);}
+function updateCountdown(value){if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}var end=parseDeadline(value);deadline.hidden=false;countdown.hidden=false;if(!Number.isFinite(end)){countdown.textContent='تاریخ مهلت ثبت‌نام قابل تشخیص نیست.';return;}function tick(){var left=end-Date.now();if(left<=0){countdown.textContent='مهلت ثبت‌نام به پایان رسیده است.';if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}return;}var sec=Math.floor(left/1000),days=Math.floor(sec/86400);sec%=86400;var h=Math.floor(sec/3600);sec%=3600;var min=Math.floor(sec/60);sec%=60;countdown.textContent='زمان باقی‌مانده: '+days+' روز و '+h+' ساعت و '+min+' دقیقه و '+sec+' ثانیه';}tick();if(end>Date.now())countdownTimer=setInterval(tick,1000);}
+window.qoranReceiveSettings=function(d){if(!d||d.ok===false)return;var by=d.byCell||{},t=d.title||by.B2,sub=d.subtitle||by.B3,r=d.rules||by.B4;if(t){title.textContent=fa(t);document.title=fa(t);}if(sub){subtitle.textContent=fa(sub);subtitle.hidden=false;}if(r){rules.textContent=fa(Array.isArray(r)?r.join('\n'):String(r));}var dl=d.deadline||by.B5;if(dl){deadlineText.textContent='مهلت ثبت‌نام: '+fa(dl);deadline.hidden=false;updateCountdown(dl);}var versionNumber=by.B6;var sv=versionNumber!==undefined&&versionNumber!==null&&String(versionNumber).trim()!==''?'S'+String(versionNumber).trim():'S7';document.getElementById('script-version').textContent=sv;};
+// VERSION I44: settings load is fully asynchronous and never shows any overlay, never disables Continue.
+fetch('config.txt?_='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw Error();return r.text();}).then(function(raw){var u=new URL(raw.trim());if(u.protocol!=='https:'||!u.pathname.endsWith('/exec'))throw Error();u.searchParams.set('callback','qoranReceiveSettings');var x=document.createElement('script');x.src=u.href;x.onerror=function(){msg('تنظیمات آنلاین بارگذاری نشد؛ امکان ادامه همچنان فعال است.',true);};document.head.appendChild(x);}).catch(function(){msg('تنظیمات آنلاین در دسترس نیست؛ امکان ادامه همچنان فعال است.',true);});
+// VERSION I44: final safety net — guarantee no loader blocks the UI, and force the loading state off on failure/load.
+window.addEventListener('load',function(){var o=document.getElementById('page-loader');if(o)o.remove();htmlEl.classList.remove('is-loading','flow-loading');});
+window.addEventListener('error',function(){var o=document.getElementById('page-loader');if(o)o.remove();htmlEl.classList.remove('is-loading','flow-loading');});
+})();
+  </script>
+<!-- I44S7 -->
+</body>
+</html>
